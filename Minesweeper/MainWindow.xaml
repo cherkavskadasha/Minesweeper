@@ -5,18 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Minesweeper"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+        Title="MainWindow" Height="450" Width="800">
     <Grid>
         <ItemsControl x:Name="itemsControl" ItemsSource="{Binding cells }">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <UniformGrid/>
+                    <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Content="{Binding Y}"/>
+                    <Button Content="{Binding X}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
