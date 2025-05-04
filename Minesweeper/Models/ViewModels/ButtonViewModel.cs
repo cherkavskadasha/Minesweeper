@@ -12,12 +12,15 @@ namespace Minesweeper.Models.ViewModels
 
         public int Y { get; set; }
 
+        public int Idx { get; set; }
+
         public bool Clicked { get; set; }
 
-        public ButtonViewModel(int x, int y)
+        public ButtonViewModel(int x, int y, int idx)
         {
             X = x;
             Y = y;
+            Idx = idx;
             Clicked = false;
         }
     }

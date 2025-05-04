@@ -10,6 +10,24 @@ namespace Minesweeper.Models.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        public MainViewModel()
+        {
+            GameManager = new GameManager();
+
+            Rows = 16;
+            Columns = 15;
+
+            CheckBombCommand = new RelayCommand((o) =>
+            {
+                int idx = (int)o;
+
+                ButtonViewModel cell = cells[idx];
+
+                GameManager.ActivateCell(cell.X, cell.Y);
+            });
+            InitializeGame();
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private int _rows;
@@ -40,24 +58,18 @@ namespace Minesweeper.Models.ViewModels
 
         public GameManager GameManager { get; set; }
 
-        public MainViewModel()
-        {
-            GameManager = new GameManager();
-            Rows = 16;
-            Columns = 15;
-            InitializeGame();
-        }
+        public RelayCommand CheckBombCommand { get; set; }
 
         public void InitializeGame()
         {
             GameManager.Initialize(Rows, Columns, "intermediate");
-            cells.Clear();
 
+            cells.Clear();
             for (int i = 0; i < Rows; i++)
             {
                 for (int j = 0; j < Columns; j++)
                 {
-                    cells.Add(new ButtonViewModel(i, j));
+                    cells.Add(new ButtonViewModel(i, j, i * Columns + j));
                 }
             }
         }

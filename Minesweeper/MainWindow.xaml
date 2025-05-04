@@ -15,7 +15,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Content="{Binding X}"/>
+                    <Button Content="{Binding X}" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.CheckBombCommand}" CommandParameter="{Binding Idx}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
