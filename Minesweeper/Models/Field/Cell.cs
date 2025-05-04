@@ -15,10 +15,9 @@
             CellType = cellType;
         }
 
-        public bool Activate()
+        public void Activate()
         {
             IsActivated = true;
-            return IsBomb;
         }
     }
 }
