@@ -21,9 +21,21 @@ namespace Minesweeper.Models.ViewModels
             {
                 int idx = (int)o;
 
-                ButtonViewModel cell = cells[idx];
-
-                GameManager.ActivateCell(cell.X, cell.Y);
+                ButtonViewModel cell = Cells[idx];
+                if (!cell.Clicked)
+                {
+                    GameManager.ActivateCell(cell.X, cell.Y);
+                    cell.Clicked = true;
+                    if (GameManager.Field.Cells[cell.X, cell.Y].CellType == Field.CellType.None)
+                    {
+                        UpdateGameStatus(true);
+                    }
+                    else
+                    {
+                        UpdateImage(cell);
+                        UpdateGameStatus(false);
+                    }
+                }
             });
             InitializeGame();
         }
@@ -54,7 +66,31 @@ namespace Minesweeper.Models.ViewModels
             }
         }
 
-        public ObservableCollection<ButtonViewModel> cells { get; set; } = new ObservableCollection<ButtonViewModel>();
+        private bool _isGameEnded;
+
+        public bool IsGameEnded
+        {
+            get => _isGameEnded;
+            set
+            {
+                _isGameEnded = value;
+                OnPropertyChanged(nameof(IsGameEnded));
+            }
+        }
+
+        private bool _isWin;
+
+        public bool IsWin
+        {
+            get => _isWin;
+            set
+            {
+                _isWin = value;
+                OnPropertyChanged(nameof(IsWin));
+            }
+        }
+
+        public ObservableCollection<ButtonViewModel> Cells { get; set; } = new ObservableCollection<ButtonViewModel>();
 
         public GameManager GameManager { get; set; }
 
@@ -64,14 +100,39 @@ namespace Minesweeper.Models.ViewModels
         {
             GameManager.Initialize(Rows, Columns, "intermediate");
 
-            cells.Clear();
+            Cells.Clear();
             for (int i = 0; i < Rows; i++)
             {
                 for (int j = 0; j < Columns; j++)
                 {
-                    cells.Add(new ButtonViewModel(i, j, i * Columns + j));
+                    Cells.Add(new ButtonViewModel(i, j, i * Columns + j));
                 }
             }
+        }
+
+        public void UpdateGameStatus(bool isFullUpdate)
+        {
+            if (isFullUpdate)
+            {
+                foreach (var cell in Cells)
+                {
+                    if (GameManager.Field.Cells[cell.X, cell.Y].IsActivated)
+                    {
+                        cell.Clicked = true;
+                        UpdateImage(cell);
+                    }
+                }
+            }
+            if (GameManager.IsEnd)
+            {
+                IsGameEnded = true;
+                IsWin = GameManager.IsWin;
+            }
+        }
+
+        private void UpdateImage(ButtonViewModel cell)
+        {
+            cell.Image = $"../../Images/{(int)GameManager.Field.Cells[cell.X, cell.Y].CellType}.png";
         }
 
         public void OnPropertyChanged(string propertyName)
