@@ -1,4 +1,5 @@
 ﻿using Minesweeper.Models;
+using Minesweeper.Models.ViewModels;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
@@ -20,7 +21,7 @@ namespace Minesweeper
     {
         int ROWS = 15;
         int COLUMNS = 15;
-        public ObservableCollection<string> cells { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<ButtonViewModel> cells { get; set; } = new ObservableCollection<ButtonViewModel>();
         
         public GameManager GameManager { get; set; }
 
@@ -35,9 +36,13 @@ namespace Minesweeper
         {
             GameManager.Initialize(ROWS, COLUMNS, "intermediate");
             cells.Clear();
-            for (int i = 0; i < ROWS * COLUMNS; i++)
+
+            for (int i = 0; i < ROWS; i++)
             {
-                cells.Add($"{i}");
+                for (int j = 0; j < COLUMNS; j++)
+                {
+                    cells.Add(new ButtonViewModel(i, j));
+                }
             }
         }
     }

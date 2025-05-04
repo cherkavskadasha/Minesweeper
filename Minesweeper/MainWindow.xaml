@@ -16,7 +16,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Content="{Binding}"/>
+                    <Button Content="{Binding Y}"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
