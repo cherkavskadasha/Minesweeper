@@ -36,7 +36,7 @@ namespace Minesweeper.Models.Field
                         {
                             for (int y = -1; y <= 1; y++)
                             {
-                                if ((x != 0 && y != 0) && (i + x) * rows + (j + y) >= 0 && bombsArr[(i + x) * rows + (j + y)])
+                                if ((x != 0 || y != 0) && i + x >= 0 && j + y >= 0 && i + x < rows && j + y < columns && bombsArr[(i + x) * rows + (j + y)])
                                 {
                                     bombNear++;
                                 }

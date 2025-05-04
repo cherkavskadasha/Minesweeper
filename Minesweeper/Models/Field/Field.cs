@@ -6,13 +6,12 @@
 
         public int BombCount { get; set; }
 
-        public int ActiveCellsCount { get; set; }
+        public int ActiveCellsRemain { get; set; }
 
         public IFieldStrategy FieldStrategy { get; set; }
 
         public Field(int rows, int columns, string difficulty)
         {
-            ActiveCellsCount = 0;
             switch (difficulty)
             {
                 case "Expert":
@@ -28,6 +27,7 @@
 
             Cells = FieldStrategy.CreateField(rows, columns);
             BombCount = FieldStrategy.BombCount;
+            ActiveCellsRemain = rows * columns - BombCount;
         }
     }
 }
