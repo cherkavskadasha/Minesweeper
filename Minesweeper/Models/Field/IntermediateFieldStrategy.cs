@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Minesweeper.Models.Field
 {
-    public class BeginnerFieldStrategy : IFieldStrategy
+    public class IntermediateFieldStrategy : IFieldStrategy
     {
-        public int BOMB_MIN_COUNT = 3;
+        public int BOMB_MIN_COUNT = 6;
 
         public override Cell[,] CreateField(int rows, int columns)
         {
-            BombCount = rows * columns / 10; // 10%
+            BombCount = rows * columns / (20 / 3); // 15%
             if (BombCount < BOMB_MIN_COUNT)
             {
                 BombCount = BOMB_MIN_COUNT;
