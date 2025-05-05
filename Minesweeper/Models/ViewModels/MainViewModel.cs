@@ -163,8 +163,21 @@ namespace Minesweeper.Models.ViewModels
             }
             if (GameManager.IsEnd)
             {
-                GameStatus.IsGameEnded = true;
-                GameStatus.IsWin = GameManager.IsWin;
+                EndGame();
+            }
+        }
+
+        private void EndGame()
+        {
+            GameStatus.IsGameEnded = true;
+            GameStatus.IsWin = GameManager.IsWin;
+
+            foreach (var cell in Cells)
+            {
+                if (GameManager.Field.Cells[cell.X, cell.Y].IsBomb)
+                {
+                    UpdateImage(cell, "bomb");
+                }
             }
         }
 
