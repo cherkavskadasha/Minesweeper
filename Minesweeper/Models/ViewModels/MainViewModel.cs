@@ -22,21 +22,20 @@ namespace Minesweeper.Models.ViewModels
                 int idx = (int)o;
 
                 CellViewModel cell = Cells[idx];
-                if (!cell.Clicked)
+                GameManager.ActivateCell(cell.X, cell.Y);
+
+                cell.Clicked = true;
+                if (GameManager.Field.Cells[cell.X, cell.Y].CellType == Field.CellType.None)
                 {
-                    GameManager.ActivateCell(cell.X, cell.Y);
-                    cell.Clicked = true;
-                    if (GameManager.Field.Cells[cell.X, cell.Y].CellType == Field.CellType.None)
-                    {
-                        UpdateGameStatus(true);
-                    }
-                    else
-                    {
-                        UpdateImageByType(cell);
-                        UpdateGameStatus(false);
-                    }
+                    UpdateGameStatus(true);
                 }
-            });
+                else
+                {
+                    UpdateImageByType(cell);
+                    UpdateGameStatus(false);
+                    EmptyCellCount--;
+                }
+            }, (o) => !Cells[(int)o].Clicked);
 
             FlagCommand = new RelayCommand((o) =>
             {
@@ -48,14 +47,17 @@ namespace Minesweeper.Models.ViewModels
                     if (cell.Flaged)
                     {
                         UpdateImage(cell, "block");
+                        BombCellCount++;
                     }
                     else
                     {
                         UpdateImage(cell, "flag");
+                        BombCellCount--;
                     }
                     cell.Flaged = !cell.Flaged;
                 }
-            });
+            },
+            (o) => BombCellCount > 0 || Cells[(int)o].Flaged);
 
             InitializeGame();
         }
@@ -110,6 +112,41 @@ namespace Minesweeper.Models.ViewModels
             }
         }
 
+        private int _emptyCellCount;
+
+        public int EmptyCellCount { 
+            get => _emptyCellCount;
+            set
+            {
+                _emptyCellCount = value;
+                OnPropertyChanged(nameof(EmptyCellCount));
+            }
+        }
+
+        private int _bombCellCount;
+
+        public int BombCellCount
+        {
+            get => _bombCellCount;
+            set
+            {
+                _bombCellCount = value;
+                OnPropertyChanged(nameof(BombCellCount));
+            }
+        }
+
+        private int _score;
+
+        public int Score
+        {
+            get => _score;
+            set
+            {
+                _score = value;
+                OnPropertyChanged(nameof(Score));
+            }
+        }
+
         public ObservableCollection<CellViewModel> Cells { get; set; } = new ObservableCollection<CellViewModel>();
 
         public GameManager GameManager { get; set; }
@@ -121,6 +158,10 @@ namespace Minesweeper.Models.ViewModels
         public void InitializeGame()
         {
             GameManager.Initialize(Rows, Columns, "intermediate");
+
+            BombCellCount = GameManager.Field.BombCount;
+            EmptyCellCount = Rows * Columns - BombCellCount;
+            Score = 0;
 
             Cells.Clear();
             for (int i = 0; i < Rows; i++)
@@ -134,6 +175,7 @@ namespace Minesweeper.Models.ViewModels
 
         public void UpdateGameStatus(bool isFullUpdate)
         {
+            Score = GameManager.Score;
             if (isFullUpdate)
             {
                 foreach (var cell in Cells)
@@ -144,6 +186,7 @@ namespace Minesweeper.Models.ViewModels
                         UpdateImageByType(cell);
                     }
                 }
+                EmptyCellCount = GameManager.Field.ActiveCellsRemain;
             }
             if (GameManager.IsEnd)
             {
