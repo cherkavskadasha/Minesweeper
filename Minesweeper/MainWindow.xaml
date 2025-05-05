@@ -68,6 +68,7 @@
         </Grid>
         <Grid Background="LightGray" Visibility="{Binding Menu.IsMenu, Converter={StaticResource BoolToVis}}">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Button Content="Історія ігор" FontSize="26" Width="200" Height="45" Command="{Binding Menu.HistoryCommand}" CommandParameter="True" Margin="0 0 0 15"/>
                 <Button Content="Вийти з акаунту" FontSize="26" Width="200" Height="45" Command="{Binding Menu.ExitAccountCommand}" Margin="0 0 0 15"/>
                 <Button Content="Вийти" FontSize="26" Width="200" Height="45" Command="{Binding Menu.ExitCommand}"/>
             </StackPanel>
@@ -102,6 +103,22 @@
                 <Button Content="Увійти" FontSize="26" Width="220" Command="{Binding Menu.LoginCommand}" Visibility="{Binding Menu.IsLogin, Converter={StaticResource BoolToVis}}"/>
                 <Button Content="Зареєструватися" FontSize="26" Width="220" Command="{Binding Menu.RegisterCommand}" Visibility="{Binding Menu.IsLogin, Converter={StaticResource ReverseBoolToVis}}"/>
             </StackPanel>
+        </Grid>
+        <Grid Background="LightGray" Visibility="{Binding Menu.IsHistory, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="100"/>
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="1" Content="Назад" Height="100" FontSize="40" FontWeight="SemiBold" Command="{Binding Menu.HistoryCommand}"/>
+            <DataGrid Grid.Row="0" ColumnHeaderHeight="60" AutoGenerateColumns="False" FontSize="32" ItemsSource="{Binding Menu.GameResults}" IsReadOnly="True" GridLinesVisibility="Vertical">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="№ з/п" Binding="{Binding Id}"/>
+                    <DataGridTextColumn Header="Складність" Binding="{Binding Difficulty}" Width="200"/>
+                    <DataGridTextColumn Header="Результат" Binding="{Binding GameResult}" Width="200"/>
+                    <DataGridTextColumn Header="Очки" Binding="{Binding Score}" Width="250"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
     </Grid>
 </Window>

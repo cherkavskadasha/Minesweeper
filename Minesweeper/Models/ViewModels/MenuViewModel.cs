@@ -67,6 +67,15 @@ namespace Minesweeper.Models.ViewModels
                 IsLogin = !IsLogin;
             });
 
+            HistoryCommand = new RelayCommand((o) =>
+            {
+                if ((string)o == "true")
+                {
+                    GameResults = _repository.GetResults(UserId);
+                }
+                IsHistory = !IsHistory;
+            });
+
             ExitCommand = new RelayCommand((o) =>
             {
                 ExitRequested?.Invoke();
@@ -122,6 +131,18 @@ namespace Minesweeper.Models.ViewModels
 
         public int UserId { get; set; }
 
+        private List<Result> _gameResults;
+
+        public List<Result> GameResults
+        {
+            get => _gameResults;
+            set
+            {
+                _gameResults = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool _isLoginScreen;
 
         public bool IsLoginScreen
@@ -158,11 +179,25 @@ namespace Minesweeper.Models.ViewModels
             }
         }
 
+        private bool _isHistory;
+
+        public bool IsHistory
+        {
+            get => _isHistory;
+            set
+            {
+                _isHistory = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RelayCommand RegisterCommand { get; set; }
 
         public RelayCommand LoginCommand { get; set; }
 
         public RelayCommand ChangeLoginAndRegisterCommand { get; set; }
+
+        public RelayCommand HistoryCommand { get; set; }
 
         public RelayCommand ExitCommand { get; set; }
 
@@ -177,6 +212,8 @@ namespace Minesweeper.Models.ViewModels
             IsLoginScreen = true;
             IsLogin = true;
             IsMenu = true;
+            IsHistory = false;
+            GameResults = new();
         }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")
