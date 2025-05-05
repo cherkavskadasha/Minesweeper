@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Minesweeper"
+        xmlns:converters="clr-namespace:Minesweeper.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         WindowState="Maximized">
@@ -26,6 +27,7 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
+        <converters:BoolToVisConterter x:Key="BoolToVis"/>
     </Window.Resources>
     <Grid Background="LightGray">
         <DockPanel VerticalAlignment="Top" LastChildFill="True" Background="Gray">
@@ -54,6 +56,12 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </StackPanel>
-        
+        <Grid Width="300" Height="200" Visibility="{Binding GameStatus.IsGameEnded, Converter={StaticResource BoolToVis}}">
+            <Rectangle Fill="Blue" Opacity="0.4"/>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Ви програли :(" FontSize="32" Foreground="Wheat"/>
+                <TextBlock Text="{Binding StringFormat=Кількість очок: {0}, Path=GameStatus.Score}" FontSize="32" Foreground="Wheat"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
