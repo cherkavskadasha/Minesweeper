@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Minesweeper.Models.ViewModels
+namespace Minesweeper.Models.ViewModels.ObserverModels
 {
     public class CellViewModel : INotifyPropertyChanged
     {
@@ -21,7 +21,7 @@ namespace Minesweeper.Models.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public int X {  get; set; }
+        public int X { get; set; }
 
         public int Y { get; set; }
 
@@ -36,7 +36,7 @@ namespace Minesweeper.Models.ViewModels
         {
             get => _image;
             set
-            { 
+            {
                 _image = value;
                 OnPropertyChanged(nameof(Image));
             }
