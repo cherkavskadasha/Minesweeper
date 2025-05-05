@@ -13,7 +13,7 @@ namespace Minesweeper.Models.ViewModels
     {
         public MenuViewModel(IGameRepository repository, MainViewModel mainVM)
         {
-            InitializeProp();
+            InitializeProp(true);
             _repository = repository;
             _mainVM = mainVM;
 
@@ -117,7 +117,7 @@ namespace Minesweeper.Models.ViewModels
 
             ExitAccountCommand = new RelayCommand((o) =>
             {
-                InitializeProp();
+                InitializeProp(true);
             });
         }
 
@@ -279,17 +279,24 @@ namespace Minesweeper.Models.ViewModels
 
         public RelayCommand ExitAccountCommand { get; set; }
 
-        private void InitializeProp()
+        public void InitializeProp(bool toMainMenu)
         {
-            UserId = 0;
             Login = "";
             Password = "";
             Error = "";
-            IsLoginScreen = true;
             IsLogin = true;
             IsMenu = true;
             IsHistory = false;
             GameResults = new();
+            if (toMainMenu)
+            {
+                UserId = 0;
+                IsLoginScreen = true;
+            }
+            else
+            {
+                IsLoginScreen = false;
+            }
         }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")

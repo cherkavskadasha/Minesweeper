@@ -12,7 +12,7 @@ namespace Minesweeper.Models.Field
 
         public override Cell[,] CreateField(int rows, int columns)
         {
-            BombCount = rows * columns / (20 / 3); // 15%
+            BombCount = rows * columns * 15 / 100; // 15%
             if (BombCount < BOMB_MIN_COUNT)
             {
                 BombCount = BOMB_MIN_COUNT;

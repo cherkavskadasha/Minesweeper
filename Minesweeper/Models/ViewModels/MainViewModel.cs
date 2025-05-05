@@ -72,6 +72,11 @@ namespace Minesweeper.Models.ViewModels
             {
                 InitializeGame(Rows, Columns, Difficulty);
             });
+
+            BackToMenuCommand = new RelayCommand((o) =>
+            {
+                Menu.InitializeProp(false);
+            }, (o) => !Menu.IsMenu);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -128,6 +133,8 @@ namespace Minesweeper.Models.ViewModels
 
         public RelayCommand GameStartCommand { get; set; }
 
+        public RelayCommand BackToMenuCommand { get; set; }
+
         public void InitializeGame(int rows, int columns, string difficulty)
         {
             Rows = rows;
@@ -182,11 +189,12 @@ namespace Minesweeper.Models.ViewModels
             GameStatus.IsGameEnded = true;
             GameStatus.IsWin = GameManager.IsWin;
 
+            string img = GameStatus.IsWin ? "bomb" : "9";
             foreach (var cell in Cells)
             {
                 if (GameManager.Field.Cells[cell.X, cell.Y].IsBomb)
                 {
-                    UpdateImage(cell, "bomb");
+                    UpdateImage(cell, img);
                 }
             }
         }
