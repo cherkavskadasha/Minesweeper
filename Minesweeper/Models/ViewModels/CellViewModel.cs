@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 
 namespace Minesweeper.Models.ViewModels
 {
-    public class ButtonViewModel : INotifyPropertyChanged
+    public class CellViewModel : INotifyPropertyChanged
     {
-        public ButtonViewModel(int x, int y, int idx)
+        public CellViewModel(int x, int y, int idx)
         {
             X = x;
             Y = y;
             Idx = idx;
             Clicked = false;
+            Flaged = false;
             Image = "../../Images/block.png";
         }
 
@@ -27,6 +28,8 @@ namespace Minesweeper.Models.ViewModels
         public int Idx { get; set; }
 
         public bool Clicked { get; set; }
+
+        public bool Flaged { get; set; }
 
         private string _image;
         public string Image

@@ -36,8 +36,13 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button Width="16" Height="16" BorderThickness="0" Template="{StaticResource NoMouseOverButtonTemplate}" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.CheckBombCommand}" CommandParameter="{Binding Idx}">
-                            <Image Source="{Binding Image}" Stretch="Fill"/>
+                        <Button Width="16" Height="16" BorderThickness="0" Template="{StaticResource NoMouseOverButtonTemplate}">
+                            <Image Source="{Binding Image}" Stretch="Fill">
+                                <Image.InputBindings>
+                                    <MouseBinding Gesture="LeftClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.CheckBombCommand}" CommandParameter="{Binding Idx}"/>
+                                    <MouseBinding Gesture="RightClick" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.FlagCommand}" CommandParameter="{Binding Idx}"/>
+                                </Image.InputBindings>
+                            </Image>
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

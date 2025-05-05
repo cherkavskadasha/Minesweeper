@@ -21,7 +21,7 @@ namespace Minesweeper.Models.ViewModels
             {
                 int idx = (int)o;
 
-                ButtonViewModel cell = Cells[idx];
+                CellViewModel cell = Cells[idx];
                 if (!cell.Clicked)
                 {
                     GameManager.ActivateCell(cell.X, cell.Y);
@@ -32,11 +32,31 @@ namespace Minesweeper.Models.ViewModels
                     }
                     else
                     {
-                        UpdateImage(cell);
+                        UpdateImageByType(cell);
                         UpdateGameStatus(false);
                     }
                 }
             });
+
+            FlagCommand = new RelayCommand((o) =>
+            {
+                int idx = (int)o;
+                CellViewModel cell = Cells[idx];
+
+                if (!cell.Clicked)
+                {
+                    if (cell.Flaged)
+                    {
+                        UpdateImage(cell, "block");
+                    }
+                    else
+                    {
+                        UpdateImage(cell, "flag");
+                    }
+                    cell.Flaged = !cell.Flaged;
+                }
+            });
+
             InitializeGame();
         }
 
@@ -90,11 +110,13 @@ namespace Minesweeper.Models.ViewModels
             }
         }
 
-        public ObservableCollection<ButtonViewModel> Cells { get; set; } = new ObservableCollection<ButtonViewModel>();
+        public ObservableCollection<CellViewModel> Cells { get; set; } = new ObservableCollection<CellViewModel>();
 
         public GameManager GameManager { get; set; }
 
         public RelayCommand CheckBombCommand { get; set; }
+
+        public RelayCommand FlagCommand { get; set; }
 
         public void InitializeGame()
         {
@@ -105,7 +127,7 @@ namespace Minesweeper.Models.ViewModels
             {
                 for (int j = 0; j < Columns; j++)
                 {
-                    Cells.Add(new ButtonViewModel(i, j, i * Columns + j));
+                    Cells.Add(new CellViewModel(i, j, i * Columns + j));
                 }
             }
         }
@@ -119,7 +141,7 @@ namespace Minesweeper.Models.ViewModels
                     if (GameManager.Field.Cells[cell.X, cell.Y].IsActivated)
                     {
                         cell.Clicked = true;
-                        UpdateImage(cell);
+                        UpdateImageByType(cell);
                     }
                 }
             }
@@ -130,9 +152,14 @@ namespace Minesweeper.Models.ViewModels
             }
         }
 
-        private void UpdateImage(ButtonViewModel cell)
+        private void UpdateImageByType(CellViewModel cell)
         {
-            cell.Image = $"../../Images/{(int)GameManager.Field.Cells[cell.X, cell.Y].CellType}.png";
+            UpdateImage(cell, $"{(int)GameManager.Field.Cells[cell.X, cell.Y].CellType}");
+        }
+
+        private void UpdateImage(CellViewModel cell, string imageName)
+        {
+            cell.Image = $"../../Images/{imageName}.png";
         }
 
         public void OnPropertyChanged(string propertyName)
