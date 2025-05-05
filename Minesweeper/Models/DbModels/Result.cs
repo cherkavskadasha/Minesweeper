@@ -14,6 +14,8 @@ namespace Minesweeper.Models.DbModels
 
         public string GameResult { get; set; }
 
+        public int Score { get; set; }
+
         public User User { get; set; }
 
         public int UserId { get; set; }
