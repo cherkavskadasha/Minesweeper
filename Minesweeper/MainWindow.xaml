@@ -27,7 +27,8 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
-        <converters:BoolToVisConterter x:Key="BoolToVis"/>
+        <converters:BoolToVisConverter x:Key="BoolToVis"/>
+        <converters:ReverseBoolToVisConverter x:Key="ReverseBoolToVis"/>
     </Window.Resources>
     <Grid Background="LightGray">
         <DockPanel VerticalAlignment="Top" LastChildFill="True" Background="Gray">
@@ -56,11 +57,12 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </StackPanel>
-        <Grid Width="300" Height="200" Visibility="{Binding GameStatus.IsGameEnded, Converter={StaticResource BoolToVis}}">
-            <Rectangle Fill="Blue" Opacity="0.4"/>
+        <Grid Width="800" Height="400" Visibility="{Binding GameStatus.IsGameEnded, Converter={StaticResource BoolToVis}}">
+            <Rectangle Fill="Blue" Opacity="0.4" RadiusX="50" RadiusY="50"/>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Text="Ви програли :(" FontSize="32" Foreground="Wheat"/>
-                <TextBlock Text="{Binding StringFormat=Кількість очок: {0}, Path=GameStatus.Score}" FontSize="32" Foreground="Wheat"/>
+                <TextBlock Text="Ви програли :(" FontSize="50" Foreground="Wheat" Visibility="{Binding GameStatus.IsWin, Converter={StaticResource ReverseBoolToVis}}"/>
+                <TextBlock Text="Ви перемогли!" FontSize="50" Foreground="Wheat" Visibility="{Binding GameStatus.IsWin, Converter={StaticResource BoolToVis}}"/>
+                <TextBlock Text="{Binding StringFormat=Кількість очок: {0}, Path=GameStatus.Score}" FontSize="50" Foreground="Wheat"/>
             </StackPanel>
         </Grid>
     </Grid>

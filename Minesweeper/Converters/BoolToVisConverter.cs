@@ -9,7 +9,7 @@ using System.Windows.Data;
 
 namespace Minesweeper.Converters
 {
-    public class BoolToVisConterter : IValueConverter
+    public class BoolToVisConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

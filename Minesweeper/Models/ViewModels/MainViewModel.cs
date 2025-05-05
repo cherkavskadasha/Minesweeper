@@ -37,7 +37,7 @@ namespace Minesweeper.Models.ViewModels
                     UpdateGameStatus(false);
                     GameStatus.EmptyCellCount--;
                 }
-            }, (o) => !Cells[(int)o].Clicked);
+            }, (o) => !Cells[(int)o].Clicked && !GameStatus.IsGameEnded);
 
             FlagCommand = new RelayCommand((o) =>
             {
@@ -59,7 +59,7 @@ namespace Minesweeper.Models.ViewModels
                     cell.Flaged = !cell.Flaged;
                 }
             },
-            (o) => GameStatus.BombCellCount > 0 || Cells[(int)o].Flaged);
+            (o) => (GameStatus.BombCellCount > 0 || Cells[(int)o].Flaged) && !GameStatus.IsGameEnded);
 
             InitializeGame();
         }
