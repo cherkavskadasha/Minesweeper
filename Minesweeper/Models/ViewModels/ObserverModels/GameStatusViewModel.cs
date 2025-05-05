@@ -10,16 +10,19 @@ namespace Minesweeper.Models.ViewModels.ObserverModels
 {
     public class GameStatusViewModel : INotifyPropertyChanged
     {
-        public GameStatusViewModel(int emptyCellCount, int bombCellCount)
+        public GameStatusViewModel(int emptyCellCount, int bombCellCount, GameManager gameManager)
         {
             IsWin = false;
             IsGameEnded = false;
             Score = 0;
             EmptyCellCount = emptyCellCount;
             BombCellCount = bombCellCount;
+            _gameManager = gameManager;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        private GameManager _gameManager;
 
         private bool _isGameEnded;
 
@@ -79,6 +82,18 @@ namespace Minesweeper.Models.ViewModels.ObserverModels
                 _score = value;
                 OnPropertyChanged();
             }
+        }
+
+        public void Update()
+        {
+            Score = _gameManager.Score;
+            EmptyCellCount = _gameManager.Field.ActiveCellsRemain;
+        }
+
+        public void End()
+        {
+            IsGameEnded = true;
+            IsWin = _gameManager.IsWin;
         }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")

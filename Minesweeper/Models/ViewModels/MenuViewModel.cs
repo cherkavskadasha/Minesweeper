@@ -1,4 +1,5 @@
 ﻿using Minesweeper.Models.DbModels;
+using Minesweeper.Models.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,68 +12,22 @@ namespace Minesweeper.Models.ViewModels
 {
     public class MenuViewModel : INotifyPropertyChanged
     {
-        public MenuViewModel(IGameRepository repository)
+        public MenuViewModel(IGameRepository repository, MainViewModel mainVM)
         {
-            Login = "";
-            Password = "";
-            Error = "";
-            IsLoginScreen = true;
-            IsLogin = true;
+            InitializeProp(true);
             _repository = repository;
+            _mainVM = mainVM;
 
-            RegisterCommand = new RelayCommand((o) =>
-            {
-                if (Login != "" && Password != "")
-                {
-                    int result = _repository.RegisterUser(Login, Password);
-
-                    if (result > 0)
-                    {
-                        UserId = result;
-                    }
-                    else
-                    {
-                        Error = "Користувач з таким логіном вже існує!";
-                    }
-                }
-                else
-                {
-                    Error = "Заповніть всі поля!";
-                }
-            });
-
-            LoginCommand = new RelayCommand((o) =>
-            {
-                if (Login != "" && Password != "")
-                {
-                    int result = _repository.LoginUser(Login, Password);
-
-                    if (result > 0)
-                    {
-                        UserId = result;
-                    }
-                    else
-                    {
-                        Error = "Неправильний логін та/або пароль!";
-                    }
-                }
-                else
-                {
-                    Error = "Заповніть всі поля!";
-                }
-            });
-
-            ChangeLoginAndRegisterCommand = new RelayCommand((o) => {
-                Login = "";
-                Password = "";
-                Error = "";
-                IsLogin = !IsLogin;
-            });
+            InitializeCommands();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private readonly IGameRepository _repository;
+
+        private readonly MainViewModel _mainVM;
+
+        public event Action ExitRequested;
 
         private string _error;
 
@@ -110,7 +65,43 @@ namespace Minesweeper.Models.ViewModels
             }
         }
 
+        private string _rows;
+
+        public string Rows
+        {
+            get => _rows;
+            set
+            {
+                _rows = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _columns;
+
+        public string Columns
+        {
+            get => _columns;
+            set
+            {
+                _columns = value;
+                OnPropertyChanged();
+            }
+        }
+
         public int UserId { get; set; }
+
+        private List<Result> _gameResults;
+
+        public List<Result> GameResults
+        {
+            get => _gameResults;
+            set
+            {
+                _gameResults = value;
+                OnPropertyChanged();
+            }
+        }
 
         private bool _isLoginScreen;
 
@@ -136,11 +127,101 @@ namespace Minesweeper.Models.ViewModels
             }
         }
 
+        private bool _isMenu;
+
+        public bool IsMenu
+        {
+            get => _isMenu;
+            set
+            {
+                _isMenu = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isHistory;
+
+        public bool IsHistory
+        {
+            get => _isHistory;
+            set
+            {
+                _isHistory = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isChoosingDifficulty;
+
+        public bool IsChoosingDifficulty
+        {
+            get => _isChoosingDifficulty;
+            set
+            {
+                _isChoosingDifficulty = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RelayCommand RegisterCommand { get; set; }
 
         public RelayCommand LoginCommand { get; set; }
 
         public RelayCommand ChangeLoginAndRegisterCommand { get; set; }
+
+        public RelayCommand ChooseDifficultyCommand {  get; set; }
+
+        public RelayCommand StartCommand { get; set; }
+
+        public RelayCommand HistoryCommand { get; set; }
+
+        public RelayCommand ExitCommand { get; set; }
+
+        public RelayCommand ExitAccountCommand { get; set; }
+
+        public void InitializeProp(bool toMainMenu)
+        {
+            Login = "";
+            Password = "";
+            Error = "";
+            IsLogin = true;
+            IsMenu = true;
+            IsHistory = false;
+            GameResults = new();
+            if (toMainMenu)
+            {
+                UserId = 0;
+                IsLoginScreen = true;
+            }
+            else
+            {
+                IsLoginScreen = false;
+            }
+        }
+
+        public void InvokeExitRequest()
+        {
+            ExitRequested?.Invoke();
+        }
+
+        private void InitializeCommands()
+        {
+            RegisterCommand = GameCommandService.CreateRegisterCommand(this, _repository);
+
+            LoginCommand = GameCommandService.CreateLoginCommand(this, _repository);
+
+            ChangeLoginAndRegisterCommand = GameCommandService.CreateChangeLoginAndRegisterCommand(this);
+
+            ChooseDifficultyCommand = GameCommandService.CreateChooseDifficultyCommand(this);
+
+            StartCommand = GameCommandService.CreateStartCommand(this, _mainVM);
+
+            HistoryCommand = GameCommandService.CreateHistoryCommand(this, _repository);
+
+            ExitCommand = GameCommandService.CreateExitCommand(this);
+
+            ExitAccountCommand = GameCommandService.CreateExitAccountCommand(this);
+        }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
