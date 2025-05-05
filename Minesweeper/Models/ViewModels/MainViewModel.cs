@@ -36,6 +36,11 @@ namespace Minesweeper.Models.ViewModels
                     UpdateImageByType(cell);
                     UpdateGameStatus(false);
                     GameStatus.EmptyCellCount--;
+                    if (cell.Flaged)
+                    {
+                        cell.Flaged = false;
+                        GameStatus.BombCellCount++;
+                    }
                 }
             }, (o) => !Cells[(int)o].Clicked && !GameStatus.IsGameEnded);
 
@@ -60,6 +65,11 @@ namespace Minesweeper.Models.ViewModels
                 }
             },
             (o) => (GameStatus.BombCellCount > 0 || Cells[(int)o].Flaged) && !GameStatus.IsGameEnded);
+
+            GameStartCommand = new RelayCommand((o) =>
+            {
+                InitializeGame();
+            });
 
             InitializeGame();
         }
@@ -90,7 +100,17 @@ namespace Minesweeper.Models.ViewModels
             }
         }
 
-        public GameStatusViewModel GameStatus { get; set; }
+        private GameStatusViewModel _gameStatus;
+
+        public GameStatusViewModel GameStatus
+        {
+            get => _gameStatus;
+            set
+            {
+                _gameStatus = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ObservableCollection<CellViewModel> Cells { get; set; } = new ObservableCollection<CellViewModel>();
 
@@ -99,6 +119,8 @@ namespace Minesweeper.Models.ViewModels
         public RelayCommand CheckBombCommand { get; set; }
 
         public RelayCommand FlagCommand { get; set; }
+
+        public RelayCommand GameStartCommand { get; set; }
 
         public void InitializeGame()
         {
@@ -121,15 +143,23 @@ namespace Minesweeper.Models.ViewModels
             GameStatus.Score = GameManager.Score;
             if (isFullUpdate)
             {
+                int startFlagCount = GameManager.Field.BombCount;
+
                 foreach (var cell in Cells)
                 {
                     if (GameManager.Field.Cells[cell.X, cell.Y].IsActivated)
                     {
                         cell.Clicked = true;
+                        cell.Flaged = false;
                         UpdateImageByType(cell);
+                    }
+                    else if (cell.Flaged)
+                    {
+                        startFlagCount--;
                     }
                 }
                 GameStatus.EmptyCellCount = GameManager.Field.ActiveCellsRemain;
+                GameStatus.BombCellCount = startFlagCount;
             }
             if (GameManager.IsEnd)
             {
