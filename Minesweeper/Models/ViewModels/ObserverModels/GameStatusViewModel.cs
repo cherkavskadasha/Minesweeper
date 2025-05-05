@@ -41,7 +41,7 @@ namespace Minesweeper.Models.ViewModels.ObserverModels
             set
             {
                 _isWin = value;
-                OnPropertyChanged(nameof(IsWin));
+                OnPropertyChanged();
             }
         }
 

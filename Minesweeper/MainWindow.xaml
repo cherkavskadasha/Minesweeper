@@ -57,13 +57,44 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </StackPanel>
-        <Grid Width="800" Height="400" Visibility="{Binding GameStatus.IsGameEnded, Converter={StaticResource BoolToVis}}">
+        <Grid Width="800" Height="400" Visibility="{Binding GameStatus.IsGameEnded, Converter={StaticResource BoolToVis}}" d:IsHidden="True">
             <Rectangle Fill="Blue" Opacity="0.4" RadiusX="50" RadiusY="50"/>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock Text="Ви програли :(" FontSize="50" Foreground="Wheat" Visibility="{Binding GameStatus.IsWin, Converter={StaticResource ReverseBoolToVis}}"/>
                 <TextBlock Text="Ви перемогли!" FontSize="50" Foreground="Wheat" Visibility="{Binding GameStatus.IsWin, Converter={StaticResource BoolToVis}}"/>
                 <TextBlock Text="{Binding StringFormat=Кількість очок: {0}, Path=GameStatus.Score}" FontSize="50" Foreground="Wheat"/>
                 <Button Content="Зіграти знову" FontSize="44" Background="BurlyWood" Foreground="#FF26738C" Command="{Binding GameStartCommand}" />
+            </StackPanel>
+        </Grid>
+        <Grid Visibility="{Binding Menu.IsLoginScreen, Converter={StaticResource BoolToVis}}" Background="LightGray">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding Menu.Error}" Foreground="Red" FontSize="20" Margin="0 0 0 7" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Логін:" FontSize="26" Width="100"/>
+                    <TextBox Width="200" Text="{Binding Menu.Login}" FontSize="26"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 15 0 0" HorizontalAlignment="Center">
+                    <TextBlock Text="Пароль:" FontSize="26" Width="100"/>
+                    <TextBox Width="200" Text="{Binding Menu.Password}" FontSize="26"/>
+                </StackPanel>
+                <TextBlock FontSize="14" Margin="0 0 0 15" Visibility="{Binding Menu.IsLogin, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Center">
+                    Немає акаунту?
+                    <TextBlock Foreground="Blue" Text="Зареєструватися!">
+                        <TextBlock.InputBindings>
+                            <MouseBinding Gesture="LeftClick" Command="{Binding Menu.ChangeLoginAndRegisterCommand}"/>
+                        </TextBlock.InputBindings>
+                    </TextBlock>
+                </TextBlock>
+                <TextBlock FontSize="14" Margin="0 0 0 15" Visibility="{Binding Menu.IsLogin, Converter={StaticResource ReverseBoolToVis}}" HorizontalAlignment="Center">
+                    Є акаунт?
+                    <TextBlock Foreground="Blue" Text="Увійти!">
+                        <TextBlock.InputBindings>
+                            <MouseBinding Gesture="LeftClick" Command="{Binding Menu.ChangeLoginAndRegisterCommand}"/>
+                        </TextBlock.InputBindings>
+                    </TextBlock>
+                </TextBlock>
+                <Button Content="Увійти" FontSize="26" Width="220" Command="{Binding Menu.LoginCommand}" Visibility="{Binding Menu.IsLogin, Converter={StaticResource BoolToVis}}"/>
+                <Button Content="Зареєструватися" FontSize="26" Width="220" Command="{Binding Menu.RegisterCommand}" Visibility="{Binding Menu.IsLogin, Converter={StaticResource ReverseBoolToVis}}"/>
             </StackPanel>
         </Grid>
     </Grid>

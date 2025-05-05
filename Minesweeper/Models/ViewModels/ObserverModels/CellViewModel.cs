@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,11 +39,11 @@ namespace Minesweeper.Models.ViewModels.ObserverModels
             set
             {
                 _image = value;
-                OnPropertyChanged(nameof(Image));
+                OnPropertyChanged();
             }
         }
 
-        public void OnPropertyChanged(string propertyName)
+        public void OnPropertyChanged([CallerMemberName]string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

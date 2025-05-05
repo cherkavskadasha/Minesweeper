@@ -1,4 +1,5 @@
-﻿using Minesweeper.Models.ViewModels.ObserverModels;
+﻿using Minesweeper.Models.DbModels;
+using Minesweeper.Models.ViewModels.ObserverModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,8 +13,12 @@ namespace Minesweeper.Models.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        public MainViewModel()
+        public MainViewModel(IGameRepository repository)
         {
+            _repository = repository;
+
+            Menu = new MenuViewModel(repository);
+
             GameManager = new GameManager();
 
             Rows = 16;
@@ -70,11 +75,13 @@ namespace Minesweeper.Models.ViewModels
             {
                 InitializeGame();
             });
-
-            InitializeGame();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        private readonly IGameRepository _repository;
+
+        public MenuViewModel Menu {  get; private set; }
 
         private int _rows;
 
