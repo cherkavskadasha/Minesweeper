@@ -11,10 +11,11 @@ namespace Minesweeper.Models.ViewModels
 {
     public class MenuViewModel : INotifyPropertyChanged
     {
-        public MenuViewModel(IGameRepository repository)
+        public MenuViewModel(IGameRepository repository, MainViewModel mainVM)
         {
             InitializeProp();
             _repository = repository;
+            _mainVM = mainVM;
 
             RegisterCommand = new RelayCommand((o) =>
             {
@@ -67,6 +68,39 @@ namespace Minesweeper.Models.ViewModels
                 IsLogin = !IsLogin;
             });
 
+            ChooseDifficultyCommand = new RelayCommand((o) =>
+            {
+                Rows = "";
+                Columns = "";
+                IsChoosingDifficulty = !IsChoosingDifficulty;
+            });
+
+            StartCommand = new RelayCommand((o) =>
+            {
+                if (Rows == "" ||  Columns == "")
+                {
+                    Error = "Заповніть всі поля!";
+                }
+                else
+                {
+                    int.TryParse(Rows, out int rows);
+                    int.TryParse(Columns, out int columns);
+                    
+                    if (rows < 5 || columns < 5 || rows > 40 || columns > 40)
+                    {
+                        Error = "Введіть коректні значення: від 5 до 40";
+                    }
+                    else
+                    {
+                        string difficulty = (string)o;
+                        IsChoosingDifficulty = false;
+                        IsMenu = false;
+                        
+                        _mainVM.InitializeGame(rows, columns, difficulty);
+                    }
+                }
+            });
+
             HistoryCommand = new RelayCommand((o) =>
             {
                 if ((string)o == "true")
@@ -90,6 +124,8 @@ namespace Minesweeper.Models.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private readonly IGameRepository _repository;
+
+        private readonly MainViewModel _mainVM;
 
         public event Action ExitRequested;
 
@@ -125,6 +161,30 @@ namespace Minesweeper.Models.ViewModels
             set
             {
                 _password = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _rows;
+
+        public string Rows
+        {
+            get => _rows;
+            set
+            {
+                _rows = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _columns;
+
+        public string Columns
+        {
+            get => _columns;
+            set
+            {
+                _columns = value;
                 OnPropertyChanged();
             }
         }
@@ -191,11 +251,27 @@ namespace Minesweeper.Models.ViewModels
             }
         }
 
+        private bool _isChoosingDifficulty;
+
+        public bool IsChoosingDifficulty
+        {
+            get => _isChoosingDifficulty;
+            set
+            {
+                _isChoosingDifficulty = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RelayCommand RegisterCommand { get; set; }
 
         public RelayCommand LoginCommand { get; set; }
 
         public RelayCommand ChangeLoginAndRegisterCommand { get; set; }
+
+        public RelayCommand ChooseDifficultyCommand {  get; set; }
+
+        public RelayCommand StartCommand { get; set; }
 
         public RelayCommand HistoryCommand { get; set; }
 

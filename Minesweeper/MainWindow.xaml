@@ -36,7 +36,7 @@
             <TextBlock DockPanel.Dock="Right" FontSize="32" Margin="0 0 10 0" Foreground="DarkRed" Text="{Binding GameStatus.BombCellCount}"/>
             <TextBlock FontSize="32" Margin="0 0 10 0" HorizontalAlignment="Center" Foreground="Gold" Text="{Binding GameStatus.Score}"/>
         </DockPanel>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 35 0 0">
             <ItemsControl x:Name="itemsControl" ItemsSource="{Binding Cells }">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -68,6 +68,7 @@
         </Grid>
         <Grid Background="LightGray" Visibility="{Binding Menu.IsMenu, Converter={StaticResource BoolToVis}}">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Button Content="Грати" FontSize="26" Width="200" Height="45" Command="{Binding Menu.ChooseDifficultyCommand}" Margin="0 0 0 15"/>
                 <Button Content="Історія ігор" FontSize="26" Width="200" Height="45" Command="{Binding Menu.HistoryCommand}" CommandParameter="True" Margin="0 0 0 15"/>
                 <Button Content="Вийти з акаунту" FontSize="26" Width="200" Height="45" Command="{Binding Menu.ExitAccountCommand}" Margin="0 0 0 15"/>
                 <Button Content="Вийти" FontSize="26" Width="200" Height="45" Command="{Binding Menu.ExitCommand}"/>
@@ -119,6 +120,25 @@
                     <DataGridTextColumn Header="Очки" Binding="{Binding Score}" Width="250"/>
                 </DataGrid.Columns>
             </DataGrid>
+        </Grid>
+        <Grid Background="LightGray" Visibility="{Binding Menu.IsChoosingDifficulty, Converter={StaticResource BoolToVis}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding Menu.Error}" Foreground="Red" FontSize="20" Margin="0 0 0 7" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="К-сть рядків:" FontSize="26" Width="180"/>
+                    <TextBox Width="200" Text="{Binding Menu.Rows}" FontSize="26"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 15 0 15">
+                    <TextBlock Text="К-сть стовпців:" FontSize="26" Width="180"/>
+                    <TextBox Width="200" Text="{Binding Menu.Columns}" FontSize="26"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                    <Button Content="Початківець" FontSize="20" Width="120" Command="{Binding Menu.StartCommand}" CommandParameter="Beginner"/>
+                    <Button Content="Середній" FontSize="20" Margin="10 0 10 0" Width="120" Command="{Binding Menu.StartCommand}" CommandParameter="Intermediate"/>
+                    <Button Content="Експерт" FontSize="20" Width="120" Command="{Binding Menu.StartCommand}" CommandParameter="Expert"/>
+                </StackPanel>
+                <Button Content="Назад" FontSize="20" Command="{Binding Menu.ChooseDifficultyCommand}" Margin="0 15 0 0"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

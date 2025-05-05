@@ -17,12 +17,9 @@ namespace Minesweeper.Models.ViewModels
         {
             _repository = repository;
 
-            Menu = new MenuViewModel(repository);
+            Menu = new MenuViewModel(repository, this);
 
             GameManager = new GameManager();
-
-            Rows = 16;
-            Columns = 15;
 
             CheckBombCommand = new RelayCommand((o) =>
             {
@@ -73,7 +70,7 @@ namespace Minesweeper.Models.ViewModels
 
             GameStartCommand = new RelayCommand((o) =>
             {
-                InitializeGame();
+                InitializeGame(Rows, Columns, Difficulty);
             });
         }
 
@@ -82,6 +79,8 @@ namespace Minesweeper.Models.ViewModels
         private readonly IGameRepository _repository;
 
         public MenuViewModel Menu {  get; private set; }
+
+        public string Difficulty { get; set; }
 
         private int _rows;
 
@@ -129,18 +128,22 @@ namespace Minesweeper.Models.ViewModels
 
         public RelayCommand GameStartCommand { get; set; }
 
-        public void InitializeGame()
+        public void InitializeGame(int rows, int columns, string difficulty)
         {
-            GameManager.Initialize(Rows, Columns, "intermediate");
+            Rows = rows;
+            Columns = columns;
+            Difficulty = difficulty;
 
-            GameStatus = new GameStatusViewModel(Rows * Columns - GameManager.Field.BombCount, GameManager.Field.BombCount);
+            GameManager.Initialize(rows, columns, difficulty);
+
+            GameStatus = new GameStatusViewModel(rows * columns - GameManager.Field.BombCount, GameManager.Field.BombCount);
 
             Cells.Clear();
-            for (int i = 0; i < Rows; i++)
+            for (int i = 0; i < rows; i++)
             {
-                for (int j = 0; j < Columns; j++)
+                for (int j = 0; j < columns; j++)
                 {
-                    Cells.Add(new CellViewModel(i, j, i * Columns + j));
+                    Cells.Add(new CellViewModel(i, j, i * columns + j));
                 }
             }
         }
