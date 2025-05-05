@@ -1,4 +1,5 @@
 ﻿using Minesweeper.Models;
+using Minesweeper.Models.DbModels;
 using Minesweeper.Models.ViewModels;
 using System.Collections.ObjectModel;
 using System.Text;
@@ -22,7 +23,7 @@ namespace Minesweeper
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
+            DataContext = new MainViewModel(new GameRepository());
         }
     }
 }
