@@ -25,7 +25,7 @@ namespace Minesweeper.Models.Field
                 for (int j = 0; j < columns; j++)
                 {
                     CellType cellType;
-                    if (bombsArr[i * rows + j])
+                    if (bombsArr[i * columns + j])
                     {
                         cellType = CellType.Bomb;
                     }
@@ -36,7 +36,7 @@ namespace Minesweeper.Models.Field
                         {
                             for (int y = -1; y <= 1; y++)
                             {
-                                if ((x != 0 || y != 0) && i + x >= 0 && j + y >= 0 && i + x < rows && j + y < columns && bombsArr[(i + x) * rows + (j + y)])
+                                if ((x != 0 || y != 0) && i + x >= 0 && j + y >= 0 && i + x < rows && j + y < columns && bombsArr[(i + x) * columns + (j + y)])
                                 {
                                     bombNear++;
                                 }
