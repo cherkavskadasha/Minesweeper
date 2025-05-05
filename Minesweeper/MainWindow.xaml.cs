@@ -23,7 +23,11 @@ namespace Minesweeper
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel(new GameRepository());
+
+            var vm = new MainViewModel(new GameRepository());
+            vm.Menu.ExitRequested += () => Application.Current.Shutdown();
+
+            DataContext = vm;
         }
     }
 }

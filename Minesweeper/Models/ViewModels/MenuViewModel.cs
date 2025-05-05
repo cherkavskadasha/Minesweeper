@@ -13,11 +13,7 @@ namespace Minesweeper.Models.ViewModels
     {
         public MenuViewModel(IGameRepository repository)
         {
-            Login = "";
-            Password = "";
-            Error = "";
-            IsLoginScreen = true;
-            IsLogin = true;
+            InitializeProp();
             _repository = repository;
 
             RegisterCommand = new RelayCommand((o) =>
@@ -29,6 +25,7 @@ namespace Minesweeper.Models.ViewModels
                     if (result > 0)
                     {
                         UserId = result;
+                        IsLoginScreen = false;
                     }
                     else
                     {
@@ -50,6 +47,7 @@ namespace Minesweeper.Models.ViewModels
                     if (result > 0)
                     {
                         UserId = result;
+                        IsLoginScreen = false;
                     }
                     else
                     {
@@ -68,11 +66,23 @@ namespace Minesweeper.Models.ViewModels
                 Error = "";
                 IsLogin = !IsLogin;
             });
+
+            ExitCommand = new RelayCommand((o) =>
+            {
+                ExitRequested?.Invoke();
+            });
+
+            ExitAccountCommand = new RelayCommand((o) =>
+            {
+                InitializeProp();
+            });
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private readonly IGameRepository _repository;
+
+        public event Action ExitRequested;
 
         private string _error;
 
@@ -136,11 +146,38 @@ namespace Minesweeper.Models.ViewModels
             }
         }
 
+        private bool _isMenu;
+
+        public bool IsMenu
+        {
+            get => _isMenu;
+            set
+            {
+                _isMenu = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RelayCommand RegisterCommand { get; set; }
 
         public RelayCommand LoginCommand { get; set; }
 
         public RelayCommand ChangeLoginAndRegisterCommand { get; set; }
+
+        public RelayCommand ExitCommand { get; set; }
+
+        public RelayCommand ExitAccountCommand { get; set; }
+
+        private void InitializeProp()
+        {
+            UserId = 0;
+            Login = "";
+            Password = "";
+            Error = "";
+            IsLoginScreen = true;
+            IsLogin = true;
+            IsMenu = true;
+        }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {

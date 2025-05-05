@@ -57,7 +57,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </StackPanel>
-        <Grid Width="800" Height="400" Visibility="{Binding GameStatus.IsGameEnded, Converter={StaticResource BoolToVis}}" d:IsHidden="True">
+        <Grid Width="800" Height="400" Visibility="{Binding GameStatus.IsGameEnded, Converter={StaticResource BoolToVis}}">
             <Rectangle Fill="Blue" Opacity="0.4" RadiusX="50" RadiusY="50"/>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock Text="Ви програли :(" FontSize="50" Foreground="Wheat" Visibility="{Binding GameStatus.IsWin, Converter={StaticResource ReverseBoolToVis}}"/>
@@ -66,7 +66,13 @@
                 <Button Content="Зіграти знову" FontSize="44" Background="BurlyWood" Foreground="#FF26738C" Command="{Binding GameStartCommand}" />
             </StackPanel>
         </Grid>
-        <Grid Visibility="{Binding Menu.IsLoginScreen, Converter={StaticResource BoolToVis}}" Background="LightGray">
+        <Grid Background="LightGray" Visibility="{Binding Menu.IsMenu, Converter={StaticResource BoolToVis}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Button Content="Вийти з акаунту" FontSize="26" Width="200" Height="45" Command="{Binding Menu.ExitAccountCommand}" Margin="0 0 0 15"/>
+                <Button Content="Вийти" FontSize="26" Width="200" Height="45" Command="{Binding Menu.ExitCommand}"/>
+            </StackPanel>
+        </Grid>
+        <Grid Visibility="{Binding Menu.IsLoginScreen, Converter={StaticResource BoolToVis}}" Background="LightGray" d:IsHidden="True">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock Text="{Binding Menu.Error}" Foreground="Red" FontSize="20" Margin="0 0 0 7" HorizontalAlignment="Center"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
