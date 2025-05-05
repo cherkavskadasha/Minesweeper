@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Minesweeper"
+        xmlns:converters="clr-namespace:Minesweeper.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         WindowState="Maximized">
@@ -26,6 +27,8 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
+        <converters:BoolToVisConverter x:Key="BoolToVis"/>
+        <converters:ReverseBoolToVisConverter x:Key="ReverseBoolToVis"/>
     </Window.Resources>
     <Grid Background="LightGray">
         <DockPanel VerticalAlignment="Top" LastChildFill="True" Background="Gray">
@@ -54,6 +57,14 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </StackPanel>
-        
+        <Grid Width="800" Height="400" Visibility="{Binding GameStatus.IsGameEnded, Converter={StaticResource BoolToVis}}">
+            <Rectangle Fill="Blue" Opacity="0.4" RadiusX="50" RadiusY="50"/>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Ви програли :(" FontSize="50" Foreground="Wheat" Visibility="{Binding GameStatus.IsWin, Converter={StaticResource ReverseBoolToVis}}"/>
+                <TextBlock Text="Ви перемогли!" FontSize="50" Foreground="Wheat" Visibility="{Binding GameStatus.IsWin, Converter={StaticResource BoolToVis}}"/>
+                <TextBlock Text="{Binding StringFormat=Кількість очок: {0}, Path=GameStatus.Score}" FontSize="50" Foreground="Wheat"/>
+                <Button Content="Зіграти знову" FontSize="44" Background="BurlyWood" Foreground="#FF26738C" Command="{Binding GameStartCommand}" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
