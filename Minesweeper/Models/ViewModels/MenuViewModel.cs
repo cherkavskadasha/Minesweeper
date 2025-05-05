@@ -1,4 +1,5 @@
 ﻿using Minesweeper.Models.DbModels;
+using Minesweeper.Models.ViewModels.Commands;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,108 +18,7 @@ namespace Minesweeper.Models.ViewModels
             _repository = repository;
             _mainVM = mainVM;
 
-            RegisterCommand = new RelayCommand((o) =>
-            {
-                if (Login != "" && Password != "")
-                {
-                    int result = _repository.RegisterUser(Login, Password);
-
-                    if (result > 0)
-                    {
-                        UserId = result;
-                        IsLoginScreen = false;
-                    }
-                    else
-                    {
-                        Error = "Користувач з таким логіном вже існує!";
-                    }
-                }
-                else
-                {
-                    Error = "Заповніть всі поля!";
-                }
-            });
-
-            LoginCommand = new RelayCommand((o) =>
-            {
-                if (Login != "" && Password != "")
-                {
-                    int result = _repository.LoginUser(Login, Password);
-
-                    if (result > 0)
-                    {
-                        UserId = result;
-                        IsLoginScreen = false;
-                    }
-                    else
-                    {
-                        Error = "Неправильний логін та/або пароль!";
-                    }
-                }
-                else
-                {
-                    Error = "Заповніть всі поля!";
-                }
-            });
-
-            ChangeLoginAndRegisterCommand = new RelayCommand((o) => {
-                Login = "";
-                Password = "";
-                Error = "";
-                IsLogin = !IsLogin;
-            });
-
-            ChooseDifficultyCommand = new RelayCommand((o) =>
-            {
-                Rows = "";
-                Columns = "";
-                IsChoosingDifficulty = !IsChoosingDifficulty;
-            });
-
-            StartCommand = new RelayCommand((o) =>
-            {
-                if (Rows == "" ||  Columns == "")
-                {
-                    Error = "Заповніть всі поля!";
-                }
-                else
-                {
-                    int.TryParse(Rows, out int rows);
-                    int.TryParse(Columns, out int columns);
-                    
-                    if (rows < 5 || columns < 5 || rows > 40 || columns > 40)
-                    {
-                        Error = "Введіть коректні значення: від 5 до 40";
-                    }
-                    else
-                    {
-                        string difficulty = (string)o;
-                        IsChoosingDifficulty = false;
-                        IsMenu = false;
-                        
-                        _mainVM.InitializeGame(rows, columns, difficulty);
-                    }
-                }
-            });
-
-            HistoryCommand = new RelayCommand((o) =>
-            {
-                if ((string)o == "true")
-                {
-                    GameResults = _repository.GetResults(UserId);
-                }
-                IsHistory = !IsHistory;
-            });
-
-            ExitCommand = new RelayCommand((o) =>
-            {
-                ExitRequested?.Invoke();
-            });
-
-            ExitAccountCommand = new RelayCommand((o) =>
-            {
-                InitializeProp(true);
-            });
+            InitializeCommands();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -297,6 +197,30 @@ namespace Minesweeper.Models.ViewModels
             {
                 IsLoginScreen = false;
             }
+        }
+
+        public void InvokeExitRequest()
+        {
+            ExitRequested?.Invoke();
+        }
+
+        private void InitializeCommands()
+        {
+            RegisterCommand = GameCommandService.CreateRegisterCommand(this, _repository);
+
+            LoginCommand = GameCommandService.CreateLoginCommand(this, _repository);
+
+            ChangeLoginAndRegisterCommand = GameCommandService.CreateChangeLoginAndRegisterCommand(this);
+
+            ChooseDifficultyCommand = GameCommandService.CreateChooseDifficultyCommand(this);
+
+            StartCommand = GameCommandService.CreateStartCommand(this, _mainVM);
+
+            HistoryCommand = GameCommandService.CreateHistoryCommand(this, _repository);
+
+            ExitCommand = GameCommandService.CreateExitCommand(this);
+
+            ExitAccountCommand = GameCommandService.CreateExitAccountCommand(this);
         }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = "")

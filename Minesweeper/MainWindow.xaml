@@ -66,7 +66,7 @@
                 <TextBlock Text="Ви програли :(" FontSize="50" Foreground="Wheat" Visibility="{Binding GameStatus.IsWin, Converter={StaticResource ReverseBoolToVis}}"/>
                 <TextBlock Text="Ви перемогли!" FontSize="50" Foreground="Wheat" Visibility="{Binding GameStatus.IsWin, Converter={StaticResource BoolToVis}}"/>
                 <TextBlock Text="{Binding StringFormat=Кількість очок: {0}, Path=GameStatus.Score}" FontSize="50" Foreground="Wheat"/>
-                <Button Content="Зіграти знову" FontSize="44" Background="BurlyWood" Foreground="#FF26738C" Command="{Binding GameStartCommand}" Margin="0 0 0 10" />
+                <Button Content="Зіграти знову" FontSize="44" Background="BurlyWood" Foreground="#FF26738C" Command="{Binding InitializeGameCommand}" Margin="0 0 0 10" />
                 <Button Content="Вийти в меню" FontSize="44" Background="BurlyWood" Foreground="#FF26738C" Command="{Binding BackToMenuCommand}" />
             </StackPanel>
         </Grid>
