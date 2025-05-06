@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Minesweeper.Models.DifficultyStrategy;
 using Minesweeper.Models.Field;
 
 namespace Minesweeper.Models
@@ -21,14 +22,41 @@ namespace Minesweeper.Models
 
         public bool IsWin { get; set; }
 
+        public int ShowFreeCellBonusQuantity { get; set; }
+
+        public int ShowBombBonusQuantity { get; set; }
+
+        public int SafeClickBonusQuantity { get; set; }
+
+        public bool IsSafeClick { get; set; }
+
+        public IDifficultyStrategy DifficultyStrategy { get; set; }
+
         public void Initialize(int rows, int columns, string difficulty)
         {
-            Field = new Field.Field(rows, columns, difficulty);
+            Field = new Field.Field();
             IsEnd = false;
             IsWin = false;
+            IsSafeClick = false;
             Score = 0;
             Rows = rows;
             Columns = columns;
+
+            switch (difficulty)
+            {
+                case "Expert":
+                    DifficultyStrategy = new ExpertDifficultyStrategy(this);
+                    break;
+                case "Intermediate":
+                    DifficultyStrategy = new IntermediateDifficultyStrategy(this);
+                    break;
+                default:
+                    DifficultyStrategy = new BeginnerDifficultyStrategy(this);
+                    break;
+            }
+
+            DifficultyStrategy.GenerateField();
+            DifficultyStrategy.SetBonusesQuantity();
         }
 
         public void ActivateCell(int x, int y)
@@ -39,7 +67,7 @@ namespace Minesweeper.Models
                 {
                     while (Field.Cells[x, y].CellType != CellType.None)
                     {
-                        Field.GenerateFieldAgain(Rows, Columns);
+                        DifficultyStrategy.GenerateField();
                     }
                 }
 
@@ -47,15 +75,23 @@ namespace Minesweeper.Models
                 if (!cell.IsActivated)
                 {
                     cell.Activate();
-                    Score += 100;
-                    Field.ActiveCellsRemain--;
 
                     if (cell.IsBomb)
                     {
-                        IsEnd = true;
+                        if (IsSafeClick)
+                        {
+                            Field.BombCount--;
+                        }
+                        else
+                        {
+                            IsEnd = true;
+                        }
                     }
                     else
                     {
+                        DifficultyStrategy.UpdateScore(cell.CellType);
+                        Field.ActiveCellsRemain--;
+
                         if (cell.CellType == CellType.None)
                         {
                             for (int i = -1; i <= 1; i++)
@@ -76,7 +112,68 @@ namespace Minesweeper.Models
                             IsWin = true;
                         }
                     }
+
+                    IsSafeClick = false;
                 }
+            }
+        }
+
+        public void ShowFreeCellBonus()
+        {
+            if (ShowFreeCellBonusQuantity > 0)
+            {
+                Score -= 500;
+                if (Score < 0)
+                {
+                    Score = 0;
+                }
+                ShowFreeCellBonusQuantity--;
+
+                for (int i = 0; i < Rows; i++)
+                {
+                    for (int j = 0; j < Columns; j++)
+                    {
+                        if (Field.Cells[i, j].CellType == CellType.None && !Field.Cells[i, j].IsActivated)
+                        {
+                            ActivateCell(i, j);
+                            return;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < Rows; i++)
+                {
+                    for (int j = 0; j < Columns; j++)
+                    {
+                        if (Field.Cells[i, j].CellType != CellType.Bomb && !Field.Cells[i, j].IsActivated)
+                        {
+                            ActivateCell(i, j);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        public void ShowBombBonus()
+        {
+            if (ShowBombBonusQuantity > 0)
+            {
+                Score -= 1000;
+                if (Score < 0)
+                {
+                    Score = 0;
+                }
+                ShowBombBonusQuantity--;
+            }
+        }
+
+        public void SafeClickBonus()
+        {
+            if (SafeClickBonusQuantity > 0)
+            {
+                IsSafeClick = true;
+                SafeClickBonusQuantity--;
             }
         }
     }

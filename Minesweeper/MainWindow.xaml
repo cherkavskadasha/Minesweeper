@@ -37,6 +37,10 @@
         <DockPanel VerticalAlignment="Top" LastChildFill="True" Background="Gray">
             <TextBlock DockPanel.Dock="Left" FontSize="32" Margin="10 0 0 0" Foreground="DarkRed" Text="{Binding GameStatus.EmptyCellCount}"/>
             <TextBlock DockPanel.Dock="Right" FontSize="32" Margin="0 0 10 0" Foreground="DarkRed" Text="{Binding GameStatus.BombCellCount}"/>
+            <Button DockPanel.Dock="Left" Width="200" FontSize="22" Margin="15 0 0 0" Content="Відкрити клітинку" ToolTip="Відкрити одну безпечну клітинку(клітинки без мін рядом в пріоритеті)" Command="{Binding ShowFreeCellCommand}"/>
+            <Button DockPanel.Dock="Left" Width="200" FontSize="22" Margin="15 0 0 0" Content="Безпечне відкриття" ToolTip="Натискання на міну на наступному ходу не призведе до поразки" Command="{Binding SafeClickCommand}"/>
+            <Button DockPanel.Dock="Right" Width="200" FontSize="22" Margin="0 0 15 0" Content="Відкрити бомбу" ToolTip="Ставить флаг на випадкову міну без флага" Command="{Binding ShowBombCommand}"/>
+            <Button DockPanel.Dock="Right" Width="200" FontSize="22" Margin="0 0 15 0" Content="Безпечне відкриття" ToolTip="Натискання на міну на наступному ходу не призведе до поразки" Command="{Binding SafeClickCommand}"/>
             <TextBlock FontSize="32" Margin="0 0 10 0" HorizontalAlignment="Center" Foreground="Gold" Text="{Binding GameStatus.Score}"/>
         </DockPanel>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 35 0 0">
