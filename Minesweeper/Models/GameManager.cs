@@ -26,6 +26,10 @@ namespace Minesweeper.Models
 
         public int ShowBombBonusQuantity { get; set; }
 
+        public int SafeClickBonusQuantity { get; set; }
+
+        public bool IsSafeClick { get; set; }
+
         public IDifficultyStrategy DifficultyStrategy { get; set; }
 
         public void Initialize(int rows, int columns, string difficulty)
@@ -33,6 +37,7 @@ namespace Minesweeper.Models
             Field = new Field.Field();
             IsEnd = false;
             IsWin = false;
+            IsSafeClick = false;
             Score = 0;
             Rows = rows;
             Columns = columns;
@@ -73,7 +78,14 @@ namespace Minesweeper.Models
 
                     if (cell.IsBomb)
                     {
-                        IsEnd = true;
+                        if (IsSafeClick)
+                        {
+                            Field.BombCount--;
+                        }
+                        else
+                        {
+                            IsEnd = true;
+                        }
                     }
                     else
                     {
@@ -100,6 +112,8 @@ namespace Minesweeper.Models
                             IsWin = true;
                         }
                     }
+
+                    IsSafeClick = false;
                 }
             }
         }
@@ -151,6 +165,15 @@ namespace Minesweeper.Models
                     Score = 0;
                 }
                 ShowBombBonusQuantity--;
+            }
+        }
+
+        public void SafeClickBonus()
+        {
+            if (SafeClickBonusQuantity > 0)
+            {
+                IsSafeClick = true;
+                SafeClickBonusQuantity--;
             }
         }
     }

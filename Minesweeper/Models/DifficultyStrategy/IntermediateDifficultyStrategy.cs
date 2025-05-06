@@ -59,6 +59,7 @@ namespace Minesweeper.Models.DifficultyStrategy
         {
             GameManager.ShowFreeCellBonusQuantity = 1;
             GameManager.ShowBombBonusQuantity = 1;
+            GameManager.SafeClickBonusQuantity = 1;
         }
     }
 }

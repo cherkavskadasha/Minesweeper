@@ -81,6 +81,8 @@ namespace Minesweeper.Models.ViewModels
 
         public RelayCommand ShowBombCommand { get; set; }
 
+        public RelayCommand SafeClickCommand { get; set; }
+
         public RelayCommand InitializeGameCommand { get; set; }
 
         public RelayCommand BackToMenuCommand { get; set; }
@@ -168,6 +170,8 @@ namespace Minesweeper.Models.ViewModels
             ShowFreeCellCommand = GameCommandService.CreateShowFreeCellCommand(this);
 
             ShowBombCommand = GameCommandService.CreateShowBombCommand(this);
+
+            SafeClickCommand = GameCommandService.CreateSafeClickCommand(this);
 
             InitializeGameCommand = GameCommandService.CreateInitializeGameCommand(this);
 

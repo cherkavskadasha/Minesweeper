@@ -120,6 +120,21 @@ namespace Minesweeper.Models.ViewModels.Commands
             return new RelayCommand(execute, canExecute);
         }
 
+        public static RelayCommand CreateSafeClickCommand(MainViewModel vm)
+        {
+            var execute = (object o) =>
+            {
+                vm.GameManager.SafeClickBonus();
+            };
+
+            var canExecute = (object o) =>
+            {
+                return vm.GameManager.SafeClickBonusQuantity > 0;
+            };
+
+            return new RelayCommand(execute, canExecute);
+        }
+
         public static RelayCommand CreateInitializeGameCommand(MainViewModel vm)
         {
             var execute = (object o) =>
