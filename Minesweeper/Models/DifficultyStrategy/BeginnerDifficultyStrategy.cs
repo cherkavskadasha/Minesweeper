@@ -50,5 +50,11 @@ namespace Minesweeper.Models.DifficultyStrategy
 
             GameManager.Score += score;
         }
+
+        public override void SetBonusesQuantity()
+        {
+            GameManager.ShowFreeCellBonusQuantity = 3;
+            GameManager.ShowBombBonusQuantity = 2;
+        }
     }
 }

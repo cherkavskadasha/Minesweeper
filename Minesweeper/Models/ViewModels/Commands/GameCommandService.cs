@@ -78,6 +78,48 @@ namespace Minesweeper.Models.ViewModels.Commands
             return new RelayCommand(execute, canExecute);
         }
 
+        public static RelayCommand CreateShowFreeCellCommand(MainViewModel vm)
+        {
+            var execute = (object o) =>
+            {
+                vm.GameManager.ShowFreeCellBonus();
+                vm.UpdateGameStatus(true);
+            };
+
+            var canExecute = (object o) =>
+            {
+                return vm.GameManager.ShowFreeCellBonusQuantity > 0;
+            };
+
+            return new RelayCommand(execute, canExecute);
+        }
+
+        public static RelayCommand CreateShowBombCommand(MainViewModel vm)
+        {
+            var execute = (object o) =>
+            {
+                vm.GameManager.ShowBombBonus();
+
+                foreach (var cell in vm.Cells)
+                {
+                    if (!cell.Flaged && vm.GameManager.Field.Cells[cell.X, cell.Y].IsBomb)
+                    {
+                        cell.Flaged = true;
+                        vm.UpdateImage(cell, "flag");
+                        vm.GameStatus.BombCellCount--;
+                        break;
+                    }
+                }
+            };
+
+            var canExecute = (object o) =>
+            {
+                return vm.GameStatus?.BombCellCount > 0 && vm.GameManager?.ShowBombBonusQuantity > 0 && vm.Cells.Where(x => x.Clicked).Any();
+            };
+
+            return new RelayCommand(execute, canExecute);
+        }
+
         public static RelayCommand CreateInitializeGameCommand(MainViewModel vm)
         {
             var execute = (object o) =>

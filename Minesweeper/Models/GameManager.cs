@@ -22,6 +22,10 @@ namespace Minesweeper.Models
 
         public bool IsWin { get; set; }
 
+        public int ShowFreeCellBonusQuantity { get; set; }
+
+        public int ShowBombBonusQuantity { get; set; }
+
         public IDifficultyStrategy DifficultyStrategy { get; set; }
 
         public void Initialize(int rows, int columns, string difficulty)
@@ -47,6 +51,7 @@ namespace Minesweeper.Models
             }
 
             DifficultyStrategy.GenerateField();
+            DifficultyStrategy.SetBonusesQuantity();
         }
 
         public void ActivateCell(int x, int y)
@@ -96,6 +101,56 @@ namespace Minesweeper.Models
                         }
                     }
                 }
+            }
+        }
+
+        public void ShowFreeCellBonus()
+        {
+            if (ShowFreeCellBonusQuantity > 0)
+            {
+                Score -= 500;
+                if (Score < 0)
+                {
+                    Score = 0;
+                }
+                ShowFreeCellBonusQuantity--;
+
+                for (int i = 0; i < Rows; i++)
+                {
+                    for (int j = 0; j < Columns; j++)
+                    {
+                        if (Field.Cells[i, j].CellType == CellType.None && !Field.Cells[i, j].IsActivated)
+                        {
+                            ActivateCell(i, j);
+                            return;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < Rows; i++)
+                {
+                    for (int j = 0; j < Columns; j++)
+                    {
+                        if (Field.Cells[i, j].CellType != CellType.Bomb && !Field.Cells[i, j].IsActivated)
+                        {
+                            ActivateCell(i, j);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        public void ShowBombBonus()
+        {
+            if (ShowBombBonusQuantity > 0)
+            {
+                Score -= 1000;
+                if (Score < 0)
+                {
+                    Score = 0;
+                }
+                ShowBombBonusQuantity--;
             }
         }
     }

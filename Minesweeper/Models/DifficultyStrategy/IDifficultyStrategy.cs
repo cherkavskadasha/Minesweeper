@@ -22,5 +22,7 @@ namespace Minesweeper.Models.DifficultyStrategy
         public abstract void GenerateField();
 
         public abstract void UpdateScore(CellType cellType);
+
+        public abstract void SetBonusesQuantity();
     }
 }

@@ -37,6 +37,8 @@
         <DockPanel VerticalAlignment="Top" LastChildFill="True" Background="Gray">
             <TextBlock DockPanel.Dock="Left" FontSize="32" Margin="10 0 0 0" Foreground="DarkRed" Text="{Binding GameStatus.EmptyCellCount}"/>
             <TextBlock DockPanel.Dock="Right" FontSize="32" Margin="0 0 10 0" Foreground="DarkRed" Text="{Binding GameStatus.BombCellCount}"/>
+            <Button DockPanel.Dock="Left" FontSize="22" Margin="15 0 0 0" Content="Відкрити клітинку" Command="{Binding ShowFreeCellCommand}"/>
+            <Button DockPanel.Dock="Right" FontSize="22" Margin="0 0 15 0" Content="Відкрити бомбу" Command="{Binding ShowBombCommand}"/>
             <TextBlock FontSize="32" Margin="0 0 10 0" HorizontalAlignment="Center" Foreground="Gold" Text="{Binding GameStatus.Score}"/>
         </DockPanel>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 35 0 0">
