@@ -9,15 +9,12 @@ namespace Minesweeper.Models.DifficultyStrategy
 {
     public abstract class IDifficultyStrategy
     {
-        protected IDifficultyStrategy(GameManager gameManager, int bombMinCount)
+        protected IDifficultyStrategy(GameManager gameManager)
         {
             GameManager = gameManager;
-            BombMinCount = bombMinCount;
         }
 
         protected GameManager GameManager;
-
-        protected readonly int BombMinCount;
 
         public abstract void GenerateField();
 

@@ -9,7 +9,7 @@ namespace Minesweeper.Models.DifficultyStrategy
 {
     public class ExpertDifficultyStrategy : IDifficultyStrategy
     {
-        public ExpertDifficultyStrategy(GameManager gameManager) : base(gameManager, BOMB_MIN_COUNT) { }
+        public ExpertDifficultyStrategy(GameManager gameManager) : base(gameManager) { }
 
         private const int BOMB_MIN_COUNT = 10;
 
