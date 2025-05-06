@@ -35,10 +35,21 @@ namespace Minesweeper.Models
         {
             if (x < Rows && y < Columns && x >= 0 && y >= 0)
             {
+                if (Field.ActiveCellsRemain == Rows * Columns - Field.BombCount) // First move
+                {
+                    while (Field.Cells[x, y].CellType != CellType.None)
+                    {
+                        Field.GenerateFieldAgain(Rows, Columns);
+                    }
+                }
+
                 Cell cell = Field.Cells[x, y];
                 if (!cell.IsActivated)
                 {
                     cell.Activate();
+                    Score += 100;
+                    Field.ActiveCellsRemain--;
+
                     if (cell.IsBomb)
                     {
                         IsEnd = true;
@@ -59,8 +70,6 @@ namespace Minesweeper.Models
                             }
                         }
 
-                        Score += 100;
-                        Field.ActiveCellsRemain--;
                         if (Field.ActiveCellsRemain == 0)
                         {
                             IsEnd = true;

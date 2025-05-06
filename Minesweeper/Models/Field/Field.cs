@@ -29,5 +29,10 @@
             BombCount = FieldStrategy.BombCount;
             ActiveCellsRemain = rows * columns - BombCount;
         }
+
+        public void GenerateFieldAgain(int rows, int columns)
+        {
+            Cells = FieldStrategy.CreateField(rows, columns);
+        }
     }
 }

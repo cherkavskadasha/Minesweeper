@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Minesweeper.Models.DbModels;
 using System.Configuration;
 using System.Data;
 using System.Windows;
@@ -17,6 +19,14 @@ namespace Minesweeper
             Config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
+
+            using (var dbContext = new GameDbContext())
+            {
+                if (dbContext.Database.GetPendingMigrations().Any())
+                {
+                    dbContext.Database.Migrate();
+                }
+            }
         }
     }
 
