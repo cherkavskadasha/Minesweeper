@@ -8,31 +8,48 @@
 
         public int ActiveCellsRemain { get; set; }
 
-        public IFieldStrategy FieldStrategy { get; set; }
-
-        public Field(int rows, int columns, string difficulty)
+        public void GenerateField(int rows, int columns, int bombCount)
         {
-            switch (difficulty)
+            Cell[,] cells = new Cell[rows, columns];
+            bool[] bombsArr = new bool[rows * columns];
+            BombCount = bombCount;
+            ActiveCellsRemain = rows * columns - BombCount;
+
+            for (int i = 0; i < bombCount; i++)
             {
-                case "Expert":
-                    FieldStrategy = new ExpertFieldStrategy();
-                    break;
-                case "Intermediate":
-                    FieldStrategy = new IntermediateFieldStrategy();
-                    break;
-                default:
-                    FieldStrategy = new BeginnerFieldStrategy();
-                    break;
+                bombsArr[i] = true;
+            }
+            Random.Shared.Shuffle(bombsArr);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < columns; j++)
+                {
+                    CellType cellType;
+                    if (bombsArr[i * columns + j])
+                    {
+                        cellType = CellType.Bomb;
+                    }
+                    else
+                    {
+                        int bombNear = 0;
+                        for (int x = -1; x <= 1; x++)
+                        {
+                            for (int y = -1; y <= 1; y++)
+                            {
+                                if ((x != 0 || y != 0) && i + x >= 0 && j + y >= 0 && i + x < rows && j + y < columns && bombsArr[(i + x) * columns + (j + y)])
+                                {
+                                    bombNear++;
+                                }
+                            }
+                        }
+                        cellType = (CellType)bombNear;
+                    }
+                    cells[i, j] = new Cell(cellType == CellType.Bomb, cellType);
+                }
             }
 
-            Cells = FieldStrategy.CreateField(rows, columns);
-            BombCount = FieldStrategy.BombCount;
-            ActiveCellsRemain = rows * columns - BombCount;
-        }
-
-        public void GenerateFieldAgain(int rows, int columns)
-        {
-            Cells = FieldStrategy.CreateField(rows, columns);
+            Cells = cells;
         }
     }
 }

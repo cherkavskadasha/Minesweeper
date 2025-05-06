@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Minesweeper.Models.DifficultyStrategy;
 using Minesweeper.Models.Field;
 
 namespace Minesweeper.Models
@@ -21,14 +22,31 @@ namespace Minesweeper.Models
 
         public bool IsWin { get; set; }
 
+        public IDifficultyStrategy DifficultyStrategy { get; set; }
+
         public void Initialize(int rows, int columns, string difficulty)
         {
-            Field = new Field.Field(rows, columns, difficulty);
+            Field = new Field.Field();
             IsEnd = false;
             IsWin = false;
             Score = 0;
             Rows = rows;
             Columns = columns;
+
+            switch (difficulty)
+            {
+                case "Expert":
+                    DifficultyStrategy = new ExpertDifficultyStrategy(this);
+                    break;
+                case "Intermediate":
+                    DifficultyStrategy = new IntermediateDifficultyStrategy(this);
+                    break;
+                default:
+                    DifficultyStrategy = new BeginnerDifficultyStrategy(this);
+                    break;
+            }
+
+            DifficultyStrategy.GenerateField();
         }
 
         public void ActivateCell(int x, int y)
@@ -39,7 +57,7 @@ namespace Minesweeper.Models
                 {
                     while (Field.Cells[x, y].CellType != CellType.None)
                     {
-                        Field.GenerateFieldAgain(Rows, Columns);
+                        DifficultyStrategy.GenerateField();
                     }
                 }
 
@@ -47,8 +65,6 @@ namespace Minesweeper.Models
                 if (!cell.IsActivated)
                 {
                     cell.Activate();
-                    Score += 100;
-                    Field.ActiveCellsRemain--;
 
                     if (cell.IsBomb)
                     {
@@ -56,6 +72,9 @@ namespace Minesweeper.Models
                     }
                     else
                     {
+                        DifficultyStrategy.UpdateScore(cell.CellType);
+                        Field.ActiveCellsRemain--;
+
                         if (cell.CellType == CellType.None)
                         {
                             for (int i = -1; i <= 1; i++)
