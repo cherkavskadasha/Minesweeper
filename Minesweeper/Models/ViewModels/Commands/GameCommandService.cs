@@ -160,11 +160,16 @@ namespace Minesweeper.Models.ViewModels.Commands
             return new RelayCommand(execute, canExecute);
         }
 
+        private static bool IsLoginAndPasswordValid(MenuViewModel vm)
+        {
+            return !string.IsNullOrWhiteSpace(vm.Login) && !string.IsNullOrWhiteSpace(vm.Password);
+        }
+
         public static RelayCommand CreateRegisterCommand(MenuViewModel vm, IGameRepository repository)
         {
             var execute = (object o) =>
             {
-                if (vm.Login != "" && vm.Password != "")
+                if (IsLoginAndPasswordValid(vm))
                 {
                     int result = repository.RegisterUser(vm.Login, vm.Password);
 
@@ -187,11 +192,12 @@ namespace Minesweeper.Models.ViewModels.Commands
             return new RelayCommand(execute);
         }
 
+
         public static RelayCommand CreateLoginCommand(MenuViewModel vm, IGameRepository repository)
         {
             var execute = (object o) =>
             {
-                if (vm.Login != "" && vm.Password != "")
+                if (IsLoginAndPasswordValid(vm))
                 {
                     int result = repository.LoginUser(vm.Login, vm.Password);
 
