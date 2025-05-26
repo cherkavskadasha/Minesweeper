@@ -1,9 +1,4 @@
 ﻿using Minesweeper.Models.Field;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Minesweeper.Models.DifficultyStrategy
 {
@@ -12,6 +7,19 @@ namespace Minesweeper.Models.DifficultyStrategy
         public BeginnerDifficultyStrategy(GameManager gameManager) : base(gameManager) { }
 
         private const int BOMB_MIN_COUNT = 3;
+
+        private static readonly Dictionary<CellType, int> ScoreMap = new Dictionary<CellType, int>
+        {
+            { CellType.None, 50 },
+            { CellType.One, 100 },
+            { CellType.Two, 100 },
+            { CellType.Three, 100 },
+            { CellType.Four, 100 },
+            { CellType.Five, 200 },
+            { CellType.Six, 200 },
+            { CellType.Seven, 300 },
+            { CellType.Eight, 300 }
+        };
 
         public override void GenerateField()
         {
@@ -29,25 +37,7 @@ namespace Minesweeper.Models.DifficultyStrategy
 
         public override void UpdateScore(CellType cellType)
         {
-            int score = 0;
-            switch (cellType)
-            {
-                case CellType.None:
-                    score = 50;
-                    break;
-                case CellType.Five:
-                case CellType.Six:
-                    score = 200;
-                    break;
-                case CellType.Eight:
-                case CellType.Seven:
-                    score = 300;
-                    break;
-                default:
-                    score = 100;
-                    break;
-            }
-
+            int score = ScoreMap.TryGetValue(cellType, out int value) ? value : 100;
             GameManager.Score += score;
         }
 

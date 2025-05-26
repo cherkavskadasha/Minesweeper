@@ -13,6 +13,19 @@ namespace Minesweeper.Models.DifficultyStrategy
 
         private const int BOMB_MIN_COUNT = 6;
 
+        private static readonly Dictionary<CellType, int> ScoreMap = new Dictionary<CellType, int>
+        {
+            { CellType.None, 100 },
+            { CellType.One, 200 },
+            { CellType.Two, 200 },
+            { CellType.Three, 300 },
+            { CellType.Four, 300 },
+            { CellType.Five, 400 },
+            { CellType.Six, 400 },
+            { CellType.Seven, 500 },
+            { CellType.Eight, 500 }
+        };
+
         public override void GenerateField()
         {
             int rows = GameManager.Rows;
@@ -29,29 +42,7 @@ namespace Minesweeper.Models.DifficultyStrategy
 
         public override void UpdateScore(CellType cellType)
         {
-            int score = 0;
-            switch (cellType)
-            {
-                case CellType.None:
-                    score = 100;
-                    break;
-                case CellType.One:
-                case CellType.Two:
-                    score = 200;
-                    break;
-                case CellType.Five:
-                case CellType.Six:
-                    score = 400;
-                    break;
-                case CellType.Eight:
-                case CellType.Seven:
-                    score = 500;
-                    break;
-                default:
-                    score = 300;
-                    break;
-            }
-
+            int score = ScoreMap.TryGetValue(cellType, out int value) ? value : 300;
             GameManager.Score += score;
         }
 
