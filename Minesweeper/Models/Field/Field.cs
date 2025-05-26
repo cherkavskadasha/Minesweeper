@@ -8,6 +8,23 @@
 
         public int ActiveCellsRemain { get; set; }
 
+        private IEnumerable<(int x, int y)> GetNeighbors(int x, int y, int rows, int cols)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    if (dx == 0 && dy == 0) continue;
+
+                    int nx = x + dx;
+                    int ny = y + dy;
+
+                    if (nx >= 0 && nx < rows && ny >= 0 && ny < cols)
+                        yield return (nx, ny);
+                }
+            }
+        }
+
         public void GenerateField(int rows, int columns, int bombCount)
         {
             Cell[,] cells = new Cell[rows, columns];
@@ -33,14 +50,11 @@
                     else
                     {
                         int bombNear = 0;
-                        for (int x = -1; x <= 1; x++)
+                        foreach (var (nx, ny) in GetNeighbors(i, j, rows, columns))
                         {
-                            for (int y = -1; y <= 1; y++)
+                            if (bombsArr[nx * columns + ny])
                             {
-                                if ((x != 0 || y != 0) && i + x >= 0 && j + y >= 0 && i + x < rows && j + y < columns && bombsArr[(i + x) * columns + (j + y)])
-                                {
-                                    bombNear++;
-                                }
+                                bombNear++;
                             }
                         }
                         cellType = (CellType)bombNear;
