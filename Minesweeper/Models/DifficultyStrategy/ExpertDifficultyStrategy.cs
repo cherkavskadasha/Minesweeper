@@ -29,8 +29,8 @@ namespace Minesweeper.Models.DifficultyStrategy
 
         public override void UpdateScore(CellType cellType)
         {
+            // Експертний рівень: більш складна формула
             int score = (int)cellType * 100 + 100;
-
             GameManager.Score += score;
         }
 
