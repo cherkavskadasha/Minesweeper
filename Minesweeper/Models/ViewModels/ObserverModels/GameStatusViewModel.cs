@@ -1,87 +1,59 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Minesweeper.Models.ViewModels.ObserverModels
 {
     public class GameStatusViewModel : INotifyPropertyChanged
     {
+        private GameManager _gameManager;
+
+        private bool _isGameEnded;
+        private bool _isWin;
+        private int _emptyCellCount;
+        private int _bombCellCount;
+        private int _score;
+
         public GameStatusViewModel(int emptyCellCount, int bombCellCount, GameManager gameManager)
         {
-            IsWin = false;
-            IsGameEnded = false;
-            Score = 0;
-            EmptyCellCount = emptyCellCount;
-            BombCellCount = bombCellCount;
             _gameManager = gameManager;
+            _emptyCellCount = emptyCellCount;
+            _bombCellCount = bombCellCount;
+            _score = 0;
+            _isWin = false;
+            _isGameEnded = false;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private GameManager _gameManager;
-
-        private bool _isGameEnded;
-
         public bool IsGameEnded
         {
             get => _isGameEnded;
-            set
-            {
-                _isGameEnded = value;
-                OnPropertyChanged();
-            }
+            set => SetField(ref _isGameEnded, value);
         }
-
-        private bool _isWin;
 
         public bool IsWin
         {
             get => _isWin;
-            set
-            {
-                _isWin = value;
-                OnPropertyChanged();
-            }
+            set => SetField(ref _isWin, value);
         }
-
-        private int _emptyCellCount;
 
         public int EmptyCellCount
         {
             get => _emptyCellCount;
-            set
-            {
-                _emptyCellCount = value;
-                OnPropertyChanged();
-            }
+            set => SetField(ref _emptyCellCount, value);
         }
-
-        private int _bombCellCount;
 
         public int BombCellCount
         {
             get => _bombCellCount;
-            set
-            {
-                _bombCellCount = value;
-                OnPropertyChanged();
-            }
+            set => SetField(ref _bombCellCount, value);
         }
-
-        private int _score;
 
         public int Score
         {
             get => _score;
-            set
-            {
-                _score = value;
-                OnPropertyChanged();
-            }
+            set => SetField(ref _score, value);
         }
 
         public void Update()
@@ -96,9 +68,15 @@ namespace Minesweeper.Models.ViewModels.ObserverModels
             IsWin = _gameManager.IsWin;
         }
 
-        public void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "") =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "")
+        {
+            if (Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
         }
     }
 }
