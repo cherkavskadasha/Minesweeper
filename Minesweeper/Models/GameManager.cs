@@ -90,9 +90,9 @@ namespace Minesweeper.Models
             AdjustScore(-FreeCellBonusPenalty);
             ShowFreeCellBonusQuantity--;
 
-            if (!TryActivateFirstUnactivatedCell(CellType.None))
+            if (!TryActivateFirstUnactivatedCell(c => c.CellType == CellType.None))
             {
-                TryActivateFirstUnactivatedCellNotBomb();
+                TryActivateFirstUnactivatedCell(c => c.CellType != CellType.Bomb);
             }
         }
 
@@ -161,29 +161,14 @@ namespace Minesweeper.Models
                 Score = 0;
         }
 
-        private bool TryActivateFirstUnactivatedCell(CellType type)
+        private bool TryActivateFirstUnactivatedCell(Func<Cell, bool> cellSelector)
         {
             for (int i = 0; i < Rows; i++)
             {
                 for (int j = 0; j < Columns; j++)
                 {
-                    if (Field.Cells[i, j].CellType == type && !Field.Cells[i, j].IsActivated)
-                    {
-                        ActivateCell(i, j);
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        private bool TryActivateFirstUnactivatedCellNotBomb()
-        {
-            for (int i = 0; i < Rows; i++)
-            {
-                for (int j = 0; j < Columns; j++)
-                {
-                    if (Field.Cells[i, j].CellType != CellType.Bomb && !Field.Cells[i, j].IsActivated)
+                    var cell = Field.Cells[i, j];
+                    if (!cell.IsActivated && cellSelector(cell))
                     {
                         ActivateCell(i, j);
                         return true;
