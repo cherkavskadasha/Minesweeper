@@ -13,70 +13,86 @@ namespace Minesweeper.Models.ViewModels.Commands
 {
     public static class GameCommandService
     {
-        public static RelayCommand CreateCheckBombCommand(MainViewModel vm)
+        public class CellActionService
         {
-            var execute = (object o) =>
+            private readonly MainViewModel _vm;
+
+            public CellActionService(MainViewModel vm)
             {
-                int idx = (int)o;
+                _vm = vm;
+            }
 
-                CellViewModel cell = vm.Cells[idx];
-                vm.GameManager.ActivateCell(cell.X, cell.Y);
-
+            public void CheckBombAt(int index)
+            {
+                var cell = _vm.Cells[index];
+                _vm.GameManager.ActivateCell(cell.X, cell.Y);
                 cell.Clicked = true;
-                if (vm.GameManager.Field.Cells[cell.X, cell.Y].CellType == Field.CellType.None)
+
+                if (_vm.GameManager.Field.Cells[cell.X, cell.Y].CellType == Field.CellType.None)
                 {
-                    vm.UpdateGameStatus(true);
+                    _vm.UpdateGameStatus(true);
                 }
                 else
                 {
-                    vm.UpdateImageByType(cell);
-                    vm.UpdateGameStatus(false);
+                    _vm.UpdateImageByType(cell);
+                    _vm.UpdateGameStatus(false);
+
                     if (cell.Flaged)
                     {
                         cell.Flaged = false;
-                        vm.GameStatus.BombCellCount++;
+                        _vm.GameStatus.BombCellCount++;
                     }
                 }
-            };
+            }
 
-            var canExecute = (object o) =>
+            public void ToggleFlagAt(int index)
             {
-                return !vm.Cells[(int)o].Clicked && !vm.GameStatus.IsGameEnded;
-            };
-
-            return new RelayCommand(execute, canExecute);
-        }
-
-        public static RelayCommand CreateFlagCommand(MainViewModel vm)
-        {
-            var execute = (object o) =>
-            {
-                int idx = (int)o;
-                CellViewModel cell = vm.Cells[idx];
+                var cell = _vm.Cells[index];
 
                 if (!cell.Clicked)
                 {
                     if (cell.Flaged)
                     {
-                        vm.UpdateImage(cell, "block");
-                        vm.GameStatus.BombCellCount++;
+                        _vm.UpdateImage(cell, "block");
+                        _vm.GameStatus.BombCellCount++;
                     }
                     else
                     {
-                        vm.UpdateImage(cell, "flag");
-                        vm.GameStatus.BombCellCount--;
+                        _vm.UpdateImage(cell, "flag");
+                        _vm.GameStatus.BombCellCount--;
                     }
+
                     cell.Flaged = !cell.Flaged;
                 }
-            };
+            }
 
-            var canExecute = (object o) =>
-            {
-                return (vm.GameStatus.BombCellCount > 0 || vm.Cells[(int)o].Flaged) && !vm.GameStatus.IsGameEnded;
-            };
+            public bool CanCheck(int index) =>
+                !_vm.Cells[index].Clicked && !_vm.GameStatus.IsGameEnded;
 
-            return new RelayCommand(execute, canExecute);
+            public bool CanToggleFlag(int index) =>
+                (_vm.GameStatus.BombCellCount > 0 || _vm.Cells[index].Flaged) && !_vm.GameStatus.IsGameEnded;
         }
+
+        public static RelayCommand CreateCheckBombCommand(MainViewModel vm)
+        {
+            var service = new CellActionService(vm);
+
+            return new RelayCommand(
+                execute: o => service.CheckBombAt((int)o),
+                canExecute: o => service.CanCheck((int)o)
+            );
+        }
+
+        public static RelayCommand CreateFlagCommand(MainViewModel vm)
+        {
+            var service = new CellActionService(vm);
+
+            return new RelayCommand(
+                execute: o => service.ToggleFlagAt((int)o),
+                canExecute: o => service.CanToggleFlag((int)o)
+            );
+        }
+
 
         public static RelayCommand CreateShowFreeCellCommand(MainViewModel vm)
         {
