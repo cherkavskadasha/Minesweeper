@@ -31,7 +31,7 @@ namespace Minesweeper.Models.DifficultyStrategy
         {
             // Експертний рівень: більш складна формула
             int score = (int)cellType * 100 + 100;
-            GameManager.Score += score;
+            GameManager.GameState.AddToScore(score);
         }
 
         public override void SetBonusesQuantity()

@@ -1,35 +1,45 @@
-﻿using Minesweeper.Models.DifficultyStrategy;
+﻿using Minesweeper.Models.Commands;
+using Minesweeper.Models.DifficultyStrategy;
 using Minesweeper.Models.Field;
 
 namespace Minesweeper.Models
 {
     public class GameManager
     {
-        private const int FreeCellBonusPenalty = 500;
-        private const int BombBonusPenalty = 1000;
-
         public Field.Field Field { get; set; }
         public int Rows { get; set; }
         public int Columns { get; set; }
-        public int Score { get; set; }
-        public bool IsEnd { get; set; }
-        public bool IsWin { get; set; }
         public int ShowFreeCellBonusQuantity { get; set; }
         public int ShowBombBonusQuantity { get; set; }
         public int SafeClickBonusQuantity { get; set; }
-        public bool IsSafeClick { get; set; }
         public IDifficultyStrategy DifficultyStrategy { get; set; }
+        public GameStateManager GameState { get; private set; }
+        public CommandInvoker CommandInvoker { get; private set; }
 
+        // Властивості для зворотної сумісності
+        public int Score => GameState.Score;
+        public bool IsEnd => GameState.IsEnd;
+        public bool IsWin => GameState.IsWin;
+        public bool IsSafeClick
+        {
+            get => GameState.IsSafeClick;
+            set => GameState.IsSafeClick = value;
+        }
+
+        public GameManager()
+        {
+            GameState = new GameStateManager();
+            CommandInvoker = new CommandInvoker();
+        }
 
         public void Initialize(int rows, int columns, string difficulty)
         {
             Field = new Field.Field();
-            IsEnd = false;
-            IsWin = false;
-            IsSafeClick = false;
-            Score = 0;
             Rows = rows;
             Columns = columns;
+
+            GameState.Initialize();
+            CommandInvoker.ClearHistory();
 
             DifficultyStrategy = difficulty switch
             {
@@ -44,138 +54,32 @@ namespace Minesweeper.Models
 
         public void ActivateCell(int x, int y)
         {
-            if (!IsWithinBounds(x, y))
-                return;
-
-            if (IsFirstMove() && Field.Cells[x, y].CellType != CellType.None)
-            {
-                RegenerateFieldUntilCellIsEmpty(x, y);
-            }
-
-            Cell cell = Field.Cells[x, y];
-            if (cell.IsActivated)
-                return;
-
-            cell.Activate();
-
-            if (cell.IsBomb)
-            {
-                HandleBombActivation();
-            }
-            else
-            {
-                DifficultyStrategy.UpdateScore(cell.CellType);
-                Field.ActiveCellsRemain--;
-
-                if (cell.CellType == CellType.None)
-                {
-                    ActivateAdjacentCells(x, y);
-                }
-
-                if (Field.ActiveCellsRemain == 0)
-                {
-                    IsEnd = true;
-                    IsWin = true;
-                }
-            }
-
-            IsSafeClick = false;
+            var command = new ActivateCellCommand(x, y, Field, GameState, DifficultyStrategy, Rows, Columns);
+            CommandInvoker.ExecuteCommand(command);
         }
 
         public void ShowFreeCellBonus()
         {
-            if (ShowFreeCellBonusQuantity <= 0)
-                return;
-
-            AdjustScore(-FreeCellBonusPenalty);
-            ShowFreeCellBonusQuantity--;
-
-            if (!TryActivateFirstUnactivatedCell(c => c.CellType == CellType.None))
-            {
-                TryActivateFirstUnactivatedCell(c => c.CellType != CellType.Bomb);
-            }
+            var command = new ShowFreeCellBonusCommand(this, GameState, CommandInvoker);
+            CommandInvoker.ExecuteCommand(command);
         }
 
         public void ShowBombBonus()
         {
-            if (ShowBombBonusQuantity <= 0)
-                return;
-
-            AdjustScore(-BombBonusPenalty);
-            ShowBombBonusQuantity--;
+            var command = new ShowBombBonusCommand(this, GameState);
+            CommandInvoker.ExecuteCommand(command);
         }
 
         public void SafeClickBonus()
         {
-            if (SafeClickBonusQuantity <= 0)
-                return;
-
-            IsSafeClick = true;
-            SafeClickBonusQuantity--;
+            var command = new SafeClickBonusCommand(this, GameState);
+            CommandInvoker.ExecuteCommand(command);
         }
 
-        private bool IsWithinBounds(int x, int y) =>
-            x >= 0 && y >= 0 && x < Rows && y < Columns;
-
-        private bool IsFirstMove() =>
-            Field.ActiveCellsRemain == Rows * Columns - Field.BombCount;
-
-        private void RegenerateFieldUntilCellIsEmpty(int x, int y)
+        // Метод для скасування останньої дії (для майбутнього розширення)
+        public void UndoLastAction()
         {
-            while (Field.Cells[x, y].CellType != CellType.None)
-            {
-                DifficultyStrategy.GenerateField();
-            }
-        }
-
-        private void HandleBombActivation()
-        {
-            if (IsSafeClick)
-            {
-                Field.BombCount--;
-            }
-            else
-            {
-                IsEnd = true;
-            }
-        }
-
-        private void ActivateAdjacentCells(int x, int y)
-        {
-            for (int i = -1; i <= 1; i++)
-            {
-                for (int j = -1; j <= 1; j++)
-                {
-                    if ((i != 0 || j != 0) && IsWithinBounds(x + i, y + j))
-                    {
-                        ActivateCell(x + i, y + j);
-                    }
-                }
-            }
-        }
-
-        private void AdjustScore(int delta)
-        {
-            Score += delta;
-            if (Score < 0)
-                Score = 0;
-        }
-
-        private bool TryActivateFirstUnactivatedCell(Func<Cell, bool> cellSelector)
-        {
-            for (int i = 0; i < Rows; i++)
-            {
-                for (int j = 0; j < Columns; j++)
-                {
-                    var cell = Field.Cells[i, j];
-                    if (!cell.IsActivated && cellSelector(cell))
-                    {
-                        ActivateCell(i, j);
-                        return true;
-                    }
-                }
-            }
-            return false;
+            CommandInvoker.UndoLastCommand();
         }
     }
 }

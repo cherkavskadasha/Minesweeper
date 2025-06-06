@@ -104,7 +104,7 @@ namespace Minesweeper.Models.ViewModels.Commands
 
             var canExecute = (object o) =>
             {
-                return vm.GameManager.ShowFreeCellBonusQuantity > 0;
+                return vm.GameManager.ShowFreeCellBonusQuantity > 0 && !vm.GameManager.IsEnd;
             };
 
             return new RelayCommand(execute, canExecute);
