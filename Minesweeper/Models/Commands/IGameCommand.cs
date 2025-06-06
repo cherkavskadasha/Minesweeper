@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Minesweeper.Models.Commands
 {
-    internal class IGameCommand
+    public interface IGameCommand
     {
+        void Execute();
+        bool CanExecute();
+        void Undo();
     }
 }

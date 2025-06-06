@@ -21,8 +21,20 @@ namespace Minesweeper.Models.ViewModels
             Menu = new MenuViewModel(repository, this);
 
             GameManager = new GameManager();
-
+            GameManager.GameState.GameEnded += OnGameEnded;
+            GameManager.GameState.ScoreChanged += OnScoreChanged;
             InitializeCommands();
+        }
+
+
+        private void OnGameEnded(bool isWin)
+        {
+            EndGame();
+        }
+
+        private void OnScoreChanged(int newScore)
+        {
+            GameStatus?.Update();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

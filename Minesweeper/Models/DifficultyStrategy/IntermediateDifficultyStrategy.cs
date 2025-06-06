@@ -43,7 +43,7 @@ namespace Minesweeper.Models.DifficultyStrategy
         public override void UpdateScore(CellType cellType)
         {
             int score = ScoreMap.TryGetValue(cellType, out int value) ? value : 300;
-            GameManager.Score += score;
+            GameManager.GameState.AddToScore(score);
         }
 
         public override void SetBonusesQuantity()
