@@ -1,19 +1,54 @@
-﻿using Minesweeper.Models.DbModels;
+using Minesweeper.Models.DbModels;
 using Minesweeper.Models.ViewModels.Commands;
 using Minesweeper.Models.ViewModels.ObserverModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Minesweeper.Models.ViewModels
 {
+    // Новий клас CellUpdater
+    public class CellUpdater
+    {
+        private readonly GameManager _gameManager;
+
+        public CellUpdater(GameManager gameManager)
+        {
+            _gameManager = gameManager;
+        }
+
+        public void UpdateCells(IEnumerable<CellViewModel> cells)
+        {
+            foreach (var cell in cells)
+            {
+                if (_gameManager.Field.Cells[cell.X, cell.Y].IsActivated)
+                {
+                    cell.Clicked = true;
+                    cell.Flaged = false;
+                    UpdateImageByType(cell);
+                }
+            }
+        }
+
+        public void UpdateImageByType(CellViewModel cell)
+        {
+            UpdateImage(cell, $"{(int)_gameManager.Field.Cells[cell.X, cell.Y].CellType}");
+        }
+
+        private void UpdateImage(CellViewModel cell, string imageName)
+        {
+            cell.Image = $"../../Images/{imageName}.png";
+        }
+    }
+
     public class MainViewModel : INotifyPropertyChanged
     {
+        private readonly IGameRepository _repository;
+
+        private CellUpdater _cellUpdater;
+
         public MainViewModel(IGameRepository repository)
         {
             _repository = repository;
@@ -23,9 +58,11 @@ namespace Minesweeper.Models.ViewModels
             GameManager = new GameManager();
             GameManager.GameState.GameEnded += OnGameEnded;
             GameManager.GameState.ScoreChanged += OnScoreChanged;
+
+            _cellUpdater = new CellUpdater(GameManager); // Ініціалізація нового сервісу
+
             InitializeCommands();
         }
-
 
         private void OnGameEnded(bool isWin)
         {
@@ -39,14 +76,11 @@ namespace Minesweeper.Models.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private readonly IGameRepository _repository;
-
-        public MenuViewModel Menu {  get; private set; }
+        public MenuViewModel Menu { get; private set; }
 
         public string Difficulty { get; set; }
 
         private int _rows;
-
         public int Rows
         {
             get => _rows;
@@ -58,7 +92,6 @@ namespace Minesweeper.Models.ViewModels
         }
 
         private int _columns;
-
         public int Columns
         {
             get => _columns;
@@ -70,7 +103,6 @@ namespace Minesweeper.Models.ViewModels
         }
 
         private GameStatusViewModel _gameStatus;
-
         public GameStatusViewModel GameStatus
         {
             get => _gameStatus;
@@ -86,17 +118,11 @@ namespace Minesweeper.Models.ViewModels
         public GameManager GameManager { get; set; }
 
         public RelayCommand CheckBombCommand { get; set; }
-
         public RelayCommand FlagCommand { get; set; }
-
         public RelayCommand ShowFreeCellCommand { get; set; }
-
         public RelayCommand ShowBombCommand { get; set; }
-
         public RelayCommand SafeClickCommand { get; set; }
-
         public RelayCommand InitializeGameCommand { get; set; }
-
         public RelayCommand BackToMenuCommand { get; set; }
 
         public void InitializeGame(int rows, int columns, string difficulty)
@@ -122,25 +148,24 @@ namespace Minesweeper.Models.ViewModels
         public void UpdateGameStatus(bool isFullUpdate)
         {
             GameStatus.Update();
+
             if (isFullUpdate)
             {
                 int startFlagCount = GameManager.Field.BombCount;
 
+                _cellUpdater.UpdateCells(Cells); // Виклик нового сервісу
+
                 foreach (var cell in Cells)
                 {
-                    if (GameManager.Field.Cells[cell.X, cell.Y].IsActivated)
-                    {
-                        cell.Clicked = true;
-                        cell.Flaged = false;
-                        UpdateImageByType(cell);
-                    }
-                    else if (cell.Flaged)
+                    if (cell.Flaged)
                     {
                         startFlagCount--;
                     }
                 }
+
                 GameStatus.BombCellCount = startFlagCount;
             }
+
             if (GameManager.IsEnd)
             {
                 EndGame();
@@ -176,21 +201,15 @@ namespace Minesweeper.Models.ViewModels
         public void InitializeCommands()
         {
             CheckBombCommand = GameCommandService.CreateCheckBombCommand(this);
-
             FlagCommand = GameCommandService.CreateFlagCommand(this);
-
             ShowFreeCellCommand = GameCommandService.CreateShowFreeCellCommand(this);
-
             ShowBombCommand = GameCommandService.CreateShowBombCommand(this);
-
             SafeClickCommand = GameCommandService.CreateSafeClickCommand(this);
-
             InitializeGameCommand = GameCommandService.CreateInitializeGameCommand(this);
-
             BackToMenuCommand = GameCommandService.CreateBackToMenuCommand(this);
         }
 
-        public void OnPropertyChanged([CallerMemberName]string propertyName = "")
+        public void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
